@@ -51,7 +51,7 @@ jobs:
         run: npm ci
 
       - name: Derive base/head SHAs for nx affected
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
 
       - name: Lint
         run: npx nx affected -t lint --parallel=3
