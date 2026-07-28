@@ -1,0 +1,11 @@
+<section class="beer-list">
+
+  <h1>Unsere Biere</h1>
+
+  <div class="beer-grid">
+    @for (beer of beers; track beer.id) {
+      <app-beer-card [beer]="beer"></app-beer-card>
+    }
+  </div>
+
+</section>

@@ -1,0 +1,15 @@
+<header class="header">
+  <div class="header-end">
+    <label class="theme-toggle" [title]="themeService.theme() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+      <input
+        type="checkbox"
+        class="theme-toggle__input"
+        [checked]="themeService.theme() === 'dark'"
+        (change)="themeService.toggle()"
+      />
+      <span class="theme-toggle__track">
+        <span class="theme-toggle__thumb"></span>
+      </span>
+    </label>
+  </div>
+</header>

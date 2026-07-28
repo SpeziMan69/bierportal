@@ -1,0 +1,21 @@
+.beer-list {
+  padding: 64px;
+  background: #111;
+  color: white;
+}
+
+.beer-list h1 {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.beer-list p {
+  color: #cfcfcf;
+}
+
+.beer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 32px;
+  margin-top: 40px;
+}

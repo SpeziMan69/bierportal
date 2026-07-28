@@ -1,0 +1,107 @@
+.auth-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Circular', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 40px 48px 48px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.auth-title {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 8px;
+  letter-spacing: -0.5px;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px 32px;
+  border-radius: 500px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s, border-color 0.2s;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  &:hover { transform: scale(1.02); }
+  &:active { transform: scale(0.98); }
+}
+
+.btn-primary {
+  background: #1db954;
+  color: #000;
+  &:hover { background: #1ed760; }
+}
+
+.btn-social {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  &:hover { border-color: var(--text-primary); }
+}
+
+.social-icon { width: 20px; height: 20px; flex-shrink: 0; }
+
+.divider { display: flex; align-items: center; gap: 12px; margin: 4px 0; }
+.divider-line { flex: 1; height: 1px; background: var(--border); }
+.divider-text { color: var(--text-secondary); font-size: 0.875rem; }
+
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-label { color: var(--text-primary); font-size: 0.875rem; font-weight: 700; }
+
+.form-input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder { color: var(--text-secondary); }
+  &:focus { border-color: var(--text-primary); }
+}
+
+.error-msg { color: var(--error); font-size: 0.875rem; margin: 0; }
+
+.auth-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-text { color: var(--text-secondary); font-size: 0.875rem; }
+
+.footer-link {
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: underline;
+  &:hover { color: #1db954; }
+}

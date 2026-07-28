@@ -1,0 +1,89 @@
+.auth-page {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Circular', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 430px;
+  padding: 40px 48px 48px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+.auth-title {
+  color: var(--text-primary);
+  font-size: 2rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+  margin: 0 0 8px;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px 32px;
+  border-radius: 500px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: transform 0.1s, background 0.2s, border-color 0.2s;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover { transform: scale(1.02); }
+  &:active { transform: scale(0.98); }
+  &:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+}
+
+.btn-primary {
+  background: #1db954;
+  color: #000;
+  &:not(:disabled):hover { background: #1ed760; }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  &:not(:disabled):hover { color: var(--text-primary); border-color: var(--text-primary); }
+}
+
+.form-group { display: flex; flex-direction: column; gap: 8px; }
+.form-label { color: var(--text-primary); font-size: 0.875rem; font-weight: 700; }
+
+.form-input {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  padding: 14px 16px;
+  outline: none;
+  transition: border-color 0.2s;
+
+  &::placeholder { color: var(--text-secondary); }
+  &:focus { border-color: var(--text-primary); }
+  &:disabled { opacity: 0.5; }
+}
+
+.error-msg { color: var(--error); font-size: 0.875rem; margin: 0; }

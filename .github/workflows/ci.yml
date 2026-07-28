@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  push:
+      branches: [main] 
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  main:
+    name: Lint, Typecheck, Test, Build
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - uses: actions/cache@v4
+        with:
+          path: .nx/cache
+          key: ${{ runner.os }}-nx-${{ hashFiles('**/package-lock.json') }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Derive base/head SHAs for nx affected
+        uses: nrwl/nx-set-shas@v4
+
+      - name: Lint
+        run: npx nx affected -t lint --parallel=3
+
+      - name: Typecheck
+        run: npx nx affected -t typecheck --parallel=3
+
+      - name: Test
+        run: npx nx affected -t test --parallel=3 --configuration=ci
+        env:
+          DATABASE_URL: postgres://test:test@localhost:5432/test_db
+          JWT_SECRET: ${{ secrets.CI_JWT_SECRET }}
+          JWT_REFRESH_SECRET: ${{ secrets.JWT_REFRESH_SECRET }}
+
+      - name: Build
+        run: npx nx affected -t build --parallel=3
