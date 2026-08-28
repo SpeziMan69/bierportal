@@ -14,7 +14,7 @@ export class BeerService {
       type: 'Stout',
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'assets/beer-placeholder.jpg',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     },
     {
@@ -25,7 +25,7 @@ export class BeerService {
       type: 'Pils',
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'assets/beer-placeholder.jpg',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     },
     {
@@ -36,7 +36,7 @@ export class BeerService {
       type: 'Pils',
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'placeholder',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     },
     {
@@ -47,7 +47,7 @@ export class BeerService {
       type: 'Pils', 
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'placeholder',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     },
     {
@@ -58,7 +58,7 @@ export class BeerService {
       type: 'Stout',
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'assets/beer-placeholder.jpg',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     },
     {
@@ -69,7 +69,7 @@ export class BeerService {
       type: 'Pils',
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'assets/beer-placeholder.jpg',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     },
     {
@@ -80,7 +80,7 @@ export class BeerService {
       type: 'Pilsng',
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'placeholder',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     },
     {
@@ -91,7 +91,7 @@ export class BeerService {
       type: 'Pils', 
       alcohol: 4.2,
       rating: 4.7,
-      imageUrl: 'placeholder',
+      imageUrl: '/public/beer-placeholder.png',
       description: 'Ein dunkles, cremiges Stout mit Röstnoten.'
     }
   ];

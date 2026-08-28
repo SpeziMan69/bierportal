@@ -1,4 +1,10 @@
 <article class="beer-card">
+  <img
+    class="beer-card-image"
+    [src]="beer.imageUrl"
+    [alt]="beer.name + ' von ' + beer.brewery"
+    loading="lazy"
+  />
   <h2>{{ beer.name }}</h2>
   <p>{{ beer.brewery }}</p>
   <p>{{ beer.type }} · {{ beer.alcohol }}%</p>
