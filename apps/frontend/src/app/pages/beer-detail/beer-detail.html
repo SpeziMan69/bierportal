@@ -1,1 +1,49 @@
-<p>beer-detail works!</p>
+<section class="beer-detail">
+  <a class="back-link" routerLink="/beers">← Zurück zu allen Bieren</a>
+
+  @if (beer; as selectedBeer) {
+    <article class="beer-detail-card">
+      <div class="beer-detail-image-wrapper">
+        <img
+          class="beer-detail-image"
+          [src]="selectedBeer.imageUrl"
+          [alt]="selectedBeer.name + ' von ' + selectedBeer.brewery"
+        />
+      </div>
+
+      <div class="beer-detail-content">
+        <p class="eyebrow">{{ selectedBeer.brewery }}</p>
+        <h1>{{ selectedBeer.name }}</h1>
+        <p class="description">{{ selectedBeer.description }}</p>
+
+        <dl class="beer-facts">
+          <div>
+            <dt>Biersorte</dt>
+            <dd>{{ selectedBeer.type }}</dd>
+          </div>
+
+          <div>
+            <dt>Herkunft</dt>
+            <dd>{{ selectedBeer.country }}</dd>
+          </div>
+
+          <div>
+            <dt>Alkohol</dt>
+            <dd>{{ selectedBeer.alcohol }} %</dd>
+          </div>
+
+          <div>
+            <dt>Bewertung</dt>
+            <dd>⭐ {{ selectedBeer.rating }}</dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+  } @else {
+    <div class="not-found">
+      <h1>Bier nicht gefunden</h1>
+      <p>Dieses Bier existiert nicht oder wurde entfernt.</p>
+      <a routerLink="/beers">Zur Bierübersicht</a>
+    </div>
+  }
+</section>

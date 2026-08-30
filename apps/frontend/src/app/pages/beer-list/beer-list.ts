@@ -1,7 +1,7 @@
 import { Component } from "@angular/core";
 import { BeerService } from "../../services/beer";
 import { Beer } from "../../models/beer";
-import { BeerCard } from "../../component/beer-card/beer-card";
+import { BeerCard } from "../../components/beer-card/beer-card";
 
 @Component({
   selector: "app-beer-list",

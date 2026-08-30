@@ -1,0 +1,20 @@
+<a
+  class="beer-card"
+  [routerLink]="['/beers', beer.id]"
+  [attr.aria-label]="'Details zu ' + beer.name"
+>
+  <img
+    class="beer-card-image"
+    [src]="beer.imageUrl"
+    [alt]="beer.name + ' von ' + beer.brewery"
+    loading="lazy"
+  />
+
+  <div class="beer-card-content">
+    <p class="beer-card-brewery">{{ beer.brewery }}</p>
+    <h2>{{ beer.name }}</h2>
+    <p>{{ beer.type }} · {{ beer.alcohol }} %</p>
+    <p>⭐ {{ beer.rating }}</p>
+    <span class="beer-card-link">Details ansehen →</span>
+  </div>
+</a>

@@ -1,8 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from './core/services/theme.service';
-import { Navbar } from './component/navbar/navbar';
-import { Footer } from './component/footer/footer';
+import { Navbar } from './components/navbar/navbar';
+import { Footer } from './components/footer/footer';
 
 @Component({
   selector: 'app-root',
