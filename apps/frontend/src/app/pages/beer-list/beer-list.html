@@ -1,11 +1,97 @@
 <section class="beer-list">
+  <header class="beer-list-header">
+    <div>
+      <p class="eyebrow">Bierkatalog</p>
+      <h1>Unsere Biere</h1>
+      <p class="beer-list-intro">
+        Entdecke verschiedene Bierstile, Brauereien und Herkunftsländer.
+      </p>
+    </div>
 
-  <h1>Unsere Biere</h1>
+    <p class="result-count">
+      {{ filteredBeers.length }}
+      {{ filteredBeers.length === 1 ? 'Bier' : 'Biere' }} gefunden
+    </p>
+  </header>
 
-  <div class="beer-grid">
-    @for (beer of beers; track beer.id) {
-      <app-beer-card [beer]="beer"></app-beer-card>
-    }
-  </div>
+  <section class="filter-panel" aria-label="Bierauswahl filtern">
+    <div class="filter-field filter-field-search">
+      <label for="beer-search">Suche</label>
 
+      <div class="search-input-wrapper">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+
+        <input
+          id="beer-search"
+          type="search"
+          name="beer-search"
+          [(ngModel)]="searchTerm"
+          placeholder="Name oder Brauerei suchen"
+          autocomplete="off"
+        />
+      </div>
+    </div>
+
+    <div class="filter-field">
+      <label for="beer-type">Biersorte</label>
+
+      <select id="beer-type" name="beer-type" [(ngModel)]="selectedType">
+        <option value="">Alle Sorten</option>
+
+        @for (type of beerTypes; track type) {
+          <option [value]="type">{{ type }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-field">
+      <label for="beer-country">Herkunft</label>
+
+      <select id="beer-country" name="beer-country" [(ngModel)]="selectedCountry">
+        <option value="">Alle Länder</option>
+
+        @for (country of countries; track country) {
+          <option [value]="country">{{ country }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-field">
+      <label for="beer-sort">Sortierung</label>
+
+      <select id="beer-sort" name="beer-sort" [(ngModel)]="selectedSort">
+        <option value="name-asc">Name A–Z</option>
+        <option value="rating-desc">Beste Bewertung</option>
+        <option value="alcohol-asc">Alkohol aufsteigend</option>
+        <option value="alcohol-desc">Alkohol absteigend</option>
+      </select>
+    </div>
+
+    <button
+      class="reset-button"
+      type="button"
+      (click)="resetFilters()"
+      [disabled]="!filtersAreActive"
+    >
+      Filter zurücksetzen
+    </button>
+  </section>
+
+  @if (filteredBeers.length > 0) {
+    <div class="beer-grid">
+      @for (beer of filteredBeers; track beer.id) {
+        <app-beer-card [beer]="beer" />
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <span class="empty-state-icon" aria-hidden="true">🍺</span>
+      <h2>Keine Biere gefunden</h2>
+      <p>Ändere deine Suche oder setze die ausgewählten Filter zurück.</p>
+
+      <button type="button" class="empty-state-button" (click)="resetFilters()">
+        Alle Biere anzeigen
+      </button>
+    </div>
+  }
 </section>
