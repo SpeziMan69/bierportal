@@ -1,13 +1,19 @@
 <section class="beer-detail">
   <a class="back-link" routerLink="/beers">← Zurück zu allen Bieren</a>
 
-  @if (beer; as selectedBeer) {
+  @if (loading()) {
+    <div class="not-found">
+      <h1>Bier wird geladen</h1>
+      <p>Die Produktinformationen werden abgerufen.</p>
+    </div>
+  } @else if (beer(); as selectedBeer) {
     <article class="beer-detail-card">
       <div class="beer-detail-image-wrapper">
         <img
           class="beer-detail-image"
           [src]="selectedBeer.imageUrl"
           [alt]="selectedBeer.name + ' von ' + selectedBeer.brewery"
+          (error)="$any($event.target).src = '/public/beer-placeholder.png'"
         />
       </div>
 
@@ -29,12 +35,24 @@
 
           <div>
             <dt>Alkohol</dt>
-            <dd>{{ selectedBeer.alcohol }} %</dd>
+            <dd>
+              @if (selectedBeer.alcohol !== null) {
+                {{ selectedBeer.alcohol }} %
+              } @else {
+                Keine Angabe
+              }
+            </dd>
           </div>
 
           <div>
             <dt>Bewertung</dt>
-            <dd>⭐ {{ selectedBeer.rating }}</dd>
+            <dd>
+              @if (selectedBeer.rating !== null) {
+                ⭐ {{ selectedBeer.rating }}
+              } @else {
+                Noch nicht bewertet
+              }
+            </dd>
           </div>
         </dl>
       </div>
@@ -42,8 +60,10 @@
   } @else {
     <div class="not-found">
       <h1>Bier nicht gefunden</h1>
-      <p>Dieses Bier existiert nicht oder wurde entfernt.</p>
-      <a routerLink="/beers">Zur Bierübersicht</a>
+      <p>{{ error() }}</p>
+      <button type="button" (click)="loadBeer()">
+        Erneut versuchen
+      </button>
     </div>
   }
 </section>
