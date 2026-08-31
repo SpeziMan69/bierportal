@@ -1,11 +1,11 @@
 export interface Beer {
-  id: number;
+  id: string;
   name: string;
   brewery: string;
   country: string;
   type: string;
-  alcohol: number;
-  rating: number;
+  alcohol: number | null;
+  rating: number | null;
   imageUrl: string;
   description: string;
 }

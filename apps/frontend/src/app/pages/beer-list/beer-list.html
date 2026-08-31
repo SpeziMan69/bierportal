@@ -77,19 +77,64 @@
     </button>
   </section>
 
-  @if (filteredBeers.length > 0) {
+  @if (loading()) {
+    <div class="empty-state">
+      <span class="empty-state-icon" aria-hidden="true">🍺</span>
+      <h2>Biere werden geladen</h2>
+      <p>Die Bierdaten werden von der API abgerufen.</p>
+    </div>
+  } @else if (error()) {
+    <div class="empty-state">
+      <h2>Biere konnten nicht geladen werden</h2>
+      <p>{{ error() }}</p>
+
+      <button
+        type="button"
+        class="empty-state-button"
+        (click)="loadInitialBeers()"
+      >
+        Erneut versuchen
+      </button>
+    </div>
+  } @else if (filteredBeers.length > 0) {
     <div class="beer-grid">
       @for (beer of filteredBeers; track beer.id) {
         <app-beer-card [beer]="beer" />
+      }
+    </div>
+    <div class="load-more-section">
+      <p class="loaded-count">
+        {{ beers().length }} von {{ totalBeers() }} Produkten geladen
+      </p>
+
+    @if (canLoadMore) {
+      <button
+        type="button"
+        class="load-more-button"
+        (click)="loadMoreBeers()"
+        [disabled]="loadingMore()"
+      >
+      @if (loadingMore()) {
+        Weitere Biere werden geladen …
+      } @else {
+        Mehr Biere laden
+      }
+      </button>
+      } @else {
+        <p class="all-loaded">Alle verfügbaren Biere wurden geladen.</p>
       }
     </div>
   } @else {
     <div class="empty-state">
       <span class="empty-state-icon" aria-hidden="true">🍺</span>
       <h2>Keine Biere gefunden</h2>
-      <p>Ändere deine Suche oder setze die ausgewählten Filter zurück.</p>
+      <p>Ändere deine Suche oder setze die Filter zurück.</p>
 
-      <button type="button" class="empty-state-button" (click)="resetFilters()">
+      <button
+        type="button"
+        class="empty-state-button"
+        (click)="resetFilters()"
+      >
         Alle Biere anzeigen
       </button>
     </div>
