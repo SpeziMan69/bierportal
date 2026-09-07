@@ -158,7 +158,7 @@ export class BeersService {
         throw error;
       }
 
-      console.error(`Fehler beim Abrufen des Biers ${normalizedId}:`, error);
+      console.error('Fehler beim Abrufen des Biers %s:', normalizedId, error);
 
       throw new BadGatewayException(
         'Das Bier konnte momentan nicht von der externen Datenquelle geladen werden.',
