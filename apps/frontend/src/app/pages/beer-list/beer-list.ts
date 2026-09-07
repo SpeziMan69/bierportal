@@ -4,11 +4,7 @@ import { BeerCard } from '../../components/beer-card/beer-card';
 import type { Beer } from '../../models/beer';
 import { BeerService } from '../../services/beer';
 
-type BeerSort =
-  | 'name-asc'
-  | 'rating-desc'
-  | 'alcohol-asc'
-  | 'alcohol-desc';
+type BeerSort = 'name-asc' | 'rating-desc' | 'alcohol-asc' | 'alcohol-desc';
 
 @Component({
   selector: 'app-beer-list',
@@ -39,38 +35,29 @@ export class BeerList {
   }
 
   protected get beerTypes(): string[] {
-    return [...new Set(this.beers().map((beer) => beer.type))].sort(
-      (firstType, secondType) =>
-        firstType.localeCompare(secondType, 'de'),
+    return [...new Set(this.beers().map((beer) => beer.type))].sort((firstType, secondType) =>
+      firstType.localeCompare(secondType, 'de'),
     );
   }
 
   protected get countries(): string[] {
     return [...new Set(this.beers().map((beer) => beer.country))].sort(
-      (firstCountry, secondCountry) =>
-        firstCountry.localeCompare(secondCountry, 'de'),
+      (firstCountry, secondCountry) => firstCountry.localeCompare(secondCountry, 'de'),
     );
   }
 
   protected get filteredBeers(): Beer[] {
-    const normalizedSearch = this.searchTerm
-      .trim()
-      .toLocaleLowerCase('de');
+    const normalizedSearch = this.searchTerm.trim().toLocaleLowerCase('de');
 
     const result = this.beers().filter((beer) => {
       const matchesSearch =
         normalizedSearch === '' ||
         beer.name.toLocaleLowerCase('de').includes(normalizedSearch) ||
-        beer.brewery
-          .toLocaleLowerCase('de')
-          .includes(normalizedSearch);
+        beer.brewery.toLocaleLowerCase('de').includes(normalizedSearch);
 
-      const matchesType =
-        this.selectedType === '' || beer.type === this.selectedType;
+      const matchesType = this.selectedType === '' || beer.type === this.selectedType;
 
-      const matchesCountry =
-        this.selectedCountry === '' ||
-        beer.country === this.selectedCountry;
+      const matchesCountry = this.selectedCountry === '' || beer.country === this.selectedCountry;
 
       return matchesSearch && matchesType && matchesCountry;
     });
@@ -78,10 +65,7 @@ export class BeerList {
     return [...result].sort((firstBeer, secondBeer) => {
       switch (this.selectedSort) {
         case 'rating-desc':
-          return (
-            (secondBeer.rating ?? 0) -
-            (firstBeer.rating ?? 0)
-          );
+          return (secondBeer.rating ?? 0) - (firstBeer.rating ?? 0);
 
         case 'alcohol-asc':
           return (
@@ -124,9 +108,7 @@ export class BeerList {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set(
-          'Die Biere konnten momentan nicht geladen werden.',
-        );
+        this.error.set('Die Biere konnten momentan nicht geladen werden.');
         this.loading.set(false);
       },
     });
@@ -141,29 +123,24 @@ export class BeerList {
 
     this.loadingMore.set(true);
 
-    this.beerService
-      .getBeers(nextPage, this.pageSize)
-      .subscribe({
-        next: (response) => {
-          const uniqueBeers = new Map<string, Beer>();
+    this.beerService.getBeers(nextPage, this.pageSize).subscribe({
+      next: (response) => {
+        const uniqueBeers = new Map<string, Beer>();
 
-          for (const beer of [
-            ...this.beers(),
-            ...response.items,
-          ]) {
-            uniqueBeers.set(beer.id, beer);
-          }
+        for (const beer of [...this.beers(), ...response.items]) {
+          uniqueBeers.set(beer.id, beer);
+        }
 
-          this.beers.set([...uniqueBeers.values()]);
-          this.currentPage.set(response.page);
-          this.totalPages.set(response.totalPages);
-          this.totalBeers.set(response.total);
-          this.loadingMore.set(false);
-        },
-        error: () => {
-          this.loadingMore.set(false);
-        },
-      });
+        this.beers.set([...uniqueBeers.values()]);
+        this.currentPage.set(response.page);
+        this.totalPages.set(response.totalPages);
+        this.totalBeers.set(response.total);
+        this.loadingMore.set(false);
+      },
+      error: () => {
+        this.loadingMore.set(false);
+      },
+    });
   }
 
   protected get canLoadMore(): boolean {

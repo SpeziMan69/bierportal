@@ -15,19 +15,19 @@
     <p class="beer-card-brewery">{{ beer.brewery }}</p>
     <h2>{{ beer.name }}</h2>
     <p>
-    {{ beer.type }}
-    @if (beer.alcohol !== null) {
-      · {{ beer.alcohol }} %
-    }
-  </p>
+      {{ beer.type }}
+      @if (beer.alcohol !== null) {
+        · {{ beer.alcohol }} %
+      }
+    </p>
 
-  <p>
-    @if (beer.rating !== null) {
-      ⭐ {{ beer.rating }}
-    } @else {
-      Noch nicht bewertet
-    }
-  </p>
+    <p>
+      @if (beer.rating !== null) {
+        ⭐ {{ beer.rating }}
+      } @else {
+        Noch nicht bewertet
+      }
+    </p>
     <span class="beer-card-link">Details ansehen →</span>
   </div>
 </a>
