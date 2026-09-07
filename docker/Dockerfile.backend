@@ -1,0 +1,22 @@
+FROM node:20-alpine AS builder
+WORKDIR /app
+
+COPY package*.json nx.json tsconfig.base.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npm run backend:build
+
+FROM node:20-alpine
+WORKDIR /app
+
+COPY --from=builder /app/dist/apps/backend ./dist/apps/backend
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+USER node
+
+
+CMD ["node", "dist/apps/backend/main.js"]
