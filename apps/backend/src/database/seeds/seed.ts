@@ -48,6 +48,14 @@ function num(value: string | undefined): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
+// Same as num(), but also treats "0" as missing data. The dump uses 0 as its
+// own "unknown" sentinel for ibu/srm (a real beer can't have 0 color), so a
+// literal 0 here is not a measurement.
+function numNonZero(value: string | undefined): number | undefined {
+  const n = num(value);
+  return n === 0 ? undefined : n;
+}
+
 function str(value: string | undefined): string | undefined {
   const v = value?.trim();
   return v ? v : undefined;
@@ -113,8 +121,8 @@ export async function seed() {
         sourceId: Number(r.id),
         name: r.name,
         abv: num(r.abv),
-        ibu: num(r.ibu),
-        srm: num(r.srm),
+        ibu: numNonZero(r.ibu),
+        srm: numNonZero(r.srm),
         description: str(r.descript),
         brewery, // left unset (-> NULL) when brewery_id was -1 / unknown
       });
