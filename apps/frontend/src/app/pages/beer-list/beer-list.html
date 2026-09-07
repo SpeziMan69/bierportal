@@ -88,11 +88,7 @@
       <h2>Biere konnten nicht geladen werden</h2>
       <p>{{ error() }}</p>
 
-      <button
-        type="button"
-        class="empty-state-button"
-        (click)="loadInitialBeers()"
-      >
+      <button type="button" class="empty-state-button" (click)="loadInitialBeers()">
         Erneut versuchen
       </button>
     </div>
@@ -103,23 +99,21 @@
       }
     </div>
     <div class="load-more-section">
-      <p class="loaded-count">
-        {{ beers().length }} von {{ totalBeers() }} Produkten geladen
-      </p>
+      <p class="loaded-count">{{ beers().length }} von {{ totalBeers() }} Produkten geladen</p>
 
-    @if (canLoadMore) {
-      <button
-        type="button"
-        class="load-more-button"
-        (click)="loadMoreBeers()"
-        [disabled]="loadingMore()"
-      >
-      @if (loadingMore()) {
-        Weitere Biere werden geladen …
-      } @else {
-        Mehr Biere laden
-      }
-      </button>
+      @if (canLoadMore) {
+        <button
+          type="button"
+          class="load-more-button"
+          (click)="loadMoreBeers()"
+          [disabled]="loadingMore()"
+        >
+          @if (loadingMore()) {
+            Weitere Biere werden geladen …
+          } @else {
+            Mehr Biere laden
+          }
+        </button>
       } @else {
         <p class="all-loaded">Alle verfügbaren Biere wurden geladen.</p>
       }
@@ -130,11 +124,7 @@
       <h2>Keine Biere gefunden</h2>
       <p>Ändere deine Suche oder setze die Filter zurück.</p>
 
-      <button
-        type="button"
-        class="empty-state-button"
-        (click)="resetFilters()"
-      >
+      <button type="button" class="empty-state-button" (click)="resetFilters()">
         Alle Biere anzeigen
       </button>
     </div>

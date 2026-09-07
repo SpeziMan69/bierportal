@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+import { Review } from '../../common/entities/review.entity';
+import { UserBeerEntry } from '../../common/entities/user-entry.entity';
 
 @Entity('users')
 export class User {
@@ -25,6 +27,12 @@ export class User {
 
   @Column({ type: 'bool', default: false })
   isUsernameSet!: boolean;
+
+  @OneToMany(() => Review, (review) => review.user)
+  reviews!: Review[];
+
+  @OneToMany(() => UserBeerEntry, (entry) => entry.user)
+  beerEntries!: UserBeerEntry[];
 
   get hasPassword(): boolean {
     return this.passwordHash !== null;

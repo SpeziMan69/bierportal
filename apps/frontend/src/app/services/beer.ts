@@ -20,16 +20,12 @@ export class BeerService {
   private readonly apiUrl = `${environment.apiUrl}/beers`;
 
   getBeers(page = 1, limit = 24): Observable<BeerPage> {
-    const params = new HttpParams()
-      .set('page', page)
-      .set('limit', limit);
+    const params = new HttpParams().set('page', page).set('limit', limit);
 
     return this.http.get<BeerPage>(this.apiUrl, { params });
   }
 
   getBeerById(id: string): Observable<Beer> {
-    return this.http.get<Beer>(
-      `${this.apiUrl}/${encodeURIComponent(id)}`,
-    );
+    return this.http.get<Beer>(`${this.apiUrl}/${encodeURIComponent(id)}`);
   }
 }

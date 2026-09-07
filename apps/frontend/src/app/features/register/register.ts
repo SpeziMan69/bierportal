@@ -31,7 +31,12 @@ import { environment } from '../../../environments/environment';
 
         <div class="form-group">
           <label class="form-label">Confirm password</label>
-          <input class="form-input" [(ngModel)]="passwordConfirm" placeholder="Confirm password" type="password" />
+          <input
+            class="form-input"
+            [(ngModel)]="passwordConfirm"
+            placeholder="Confirm password"
+            type="password"
+          />
         </div>
 
         @if (passwordMismatch()) {
@@ -92,7 +97,7 @@ export class Register {
         password: this.password,
       })
       .subscribe({
-        next: () => this.router.navigate(['/login']),
+        next: () => void this.router.navigate(['/login']),
         error: () => this.error.set('Registration failed. Please try again.'),
       });
   }

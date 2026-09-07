@@ -11,7 +11,9 @@ import { Auth } from '../../core/auth/auth';
     <div class="auth-page">
       <div class="auth-card">
         <h1 class="auth-title">Choose a username</h1>
-        <p class="auth-subtitle">Pick a username for your profile. You can always change it later.</p>
+        <p class="auth-subtitle">
+          Pick a username for your profile. You can always change it later.
+        </p>
 
         <div class="form-group">
           <label class="form-label">Username</label>
@@ -28,13 +30,15 @@ import { Auth } from '../../core/auth/auth';
           <p class="error-msg">{{ error() }}</p>
         }
 
-        <button class="btn btn-primary" (click)="submit()" [disabled]="!username.trim() || loading()">
+        <button
+          class="btn btn-primary"
+          (click)="submit()"
+          [disabled]="!username.trim() || loading()"
+        >
           {{ loading() ? 'Saving...' : 'Continue' }}
         </button>
 
-        <button class="btn btn-ghost" (click)="skip()" [disabled]="loading()">
-          Skip for now
-        </button>
+        <button class="btn btn-ghost" (click)="skip()" [disabled]="loading()">Skip for now</button>
       </div>
     </div>
   `,

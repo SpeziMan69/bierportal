@@ -39,9 +39,7 @@ export class BeerDetail {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set(
-          'Dieses Bier wurde nicht gefunden oder konnte nicht geladen werden.',
-        );
+        this.error.set('Dieses Bier wurde nicht gefunden oder konnte nicht geladen werden.');
         this.loading.set(false);
       },
     });

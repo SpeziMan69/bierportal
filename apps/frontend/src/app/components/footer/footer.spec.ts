@@ -1,8 +1,8 @@
-import { ComponentFixture, TestBed } from "@angular/core/testing";
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Footer } from "./footer";
+import { Footer } from './footer';
 
-describe("Footer", () => {
+describe('Footer', () => {
   let component: Footer;
   let fixture: ComponentFixture<Footer>;
 
@@ -16,7 +16,7 @@ describe("Footer", () => {
     await fixture.whenStable();
   });
 
-  it("should create", () => {
+  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });
