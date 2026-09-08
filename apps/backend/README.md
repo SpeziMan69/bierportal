@@ -2,7 +2,7 @@
 
 REST API built with NestJS, TypeORM, and PostgreSQL.
 
-## 🏗️ Structure
+## Structure
 
 ```
 src/
@@ -19,7 +19,7 @@ src/
 └── modules/                # Feature modules
 ```
 
-## 🚀 Development
+## Development
 
 **Note:** This is an NX monorepo app. Run all commands from the **project root**.
 
@@ -44,7 +44,7 @@ npm run backend:build
 npm run backend:start
 ```
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Unit tests
@@ -57,7 +57,7 @@ npm run backend:test:e2e
 nx test backend --watch
 ```
 
-## 🔍 Code Quality
+## Code Quality
 
 ```bash
 # Lint
@@ -67,7 +67,7 @@ npm run backend:lint
 npm run backend:format
 ```
 
-## 📝 Code Conventions
+## Code Conventions
 
 - Kein `any` – immer Interfaces nutzen
 - Explizite Return Types bei Funktionen
@@ -75,7 +75,7 @@ npm run backend:format
 - Wiederverwendbare Components → `shared/components/`
 - Feature-spezifisches → `features/[name]/`
 
-## 🗄️ Database
+## Database
 
 PostgreSQL 16 database configured with TypeORM.
 
@@ -104,7 +104,7 @@ DB_PASSWORD=your_password
 DB_NAME=your_database
 ```
 
-## 📚 Resources
+## Resources
 
 - [NestJS Documentation](https://docs.nestjs.com)
 - [TypeORM Documentation](https://typeorm.io)

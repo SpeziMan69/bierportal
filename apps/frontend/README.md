@@ -2,7 +2,7 @@
 
 Modern Angular 17+ application with standalone components, signals, and TypeScript.
 
-## 🏗️ Structure
+## Structure
 
 ```
 src/
@@ -27,7 +27,7 @@ src/
 └── styles.scss             # Global styles
 ```
 
-## 🚀 Development
+## Development
 
 **Note:** This is an NX monorepo app. Run all commands from the **project root**.
 
@@ -48,7 +48,7 @@ npm run frontend:build
 
 Build artifacts will be in `dist/apps/frontend/`
 
-## 🧪 Testing
+## Testing
 
 ```bash
 # Unit tests
@@ -58,7 +58,7 @@ npm run frontend:test
 nx test frontend --watch
 ```
 
-## 🔍 Code Quality
+## Code Quality
 
 ```bash
 # Lint
@@ -68,7 +68,7 @@ npm run frontend:lint
 npm run frontend:format
 ```
 
-## 📝 Code Conventions
+## Code Conventions
 
 ### Angular 17+ Best Practices
 
@@ -96,7 +96,7 @@ npm run frontend:format
 - Reusable components → `shared/components/`
 - Feature-specific → `features/[name]/`
 
-## 🛠️ Generating Code
+## Generating Code
 
 ```bash
 # Generate component
@@ -109,7 +109,7 @@ nx generate @nx/angular:service --name=my-service --project=frontend
 nx generate @nx/angular:guard --name=my-guard --project=frontend
 ```
 
-## 📚 Resources
+## Resources
 
 - [Angular Documentation](https://angular.dev)
 - [Angular Signals](https://angular.dev/guide/signals)

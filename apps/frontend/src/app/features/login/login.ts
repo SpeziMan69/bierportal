@@ -21,7 +21,7 @@ export class Login {
     this.error.set(null);
     this.auth.login(this.identifier, this.password).subscribe({
       next: (res) => this.auth.user.set(res),
-      error: () => this.error.set('Login fehlgeschlagen'),
+      error: () => this.error.set('Login failed. Please try again.'),
     });
   }
 }

@@ -15,12 +15,12 @@ export class AuthService {
   ) {}
 
   async register(dto: RegisterDto) {
-    const existing_email = await this.usersService.findByEmail(dto.email);
-    const existing_username = await this.usersService.findByUsername(dto.username);
-    if (existing_username) {
+    const existingEmail = await this.usersService.findByEmail(dto.email);
+    const existingUsername = await this.usersService.findByUsername(dto.username);
+    if (existingUsername) {
       throw new ConflictException('Registrierung fehlgeschlagen - Benutzername bereits vergeben');
     }
-    if (existing_email) {
+    if (existingEmail) {
       throw new ConflictException('Registrierung fehlgeschlagen - Email bereits vergeben');
     }
     const passwordHash = await bcrypt.hash(dto.password, 12);

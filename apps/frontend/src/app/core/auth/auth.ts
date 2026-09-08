@@ -19,11 +19,12 @@ export class Auth {
   user = signal<AuthUser | null>(null);
 
   login(identifier: string, password: string): Observable<AuthUser> {
-    return this.http.post<AuthUser>(
-      `${this.apiUrl}/login`,
-      { identifier, password },
-      // withCredentials kommt vom Interceptor
-    );
+    // withCredentials is added by the interceptor
+    return this.http.post<AuthUser>(`${this.apiUrl}/login`, { identifier, password });
+  }
+
+  register(username: string, email: string, password: string): Observable<unknown> {
+    return this.http.post(`${this.apiUrl}/register`, { username, email, password });
   }
 
   loginOrRegisterWithGoogle(): void {
