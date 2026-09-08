@@ -4,12 +4,17 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'node:path';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.use(helmet());
   app.use(cookieParser());
+  app.useStaticAssets(join(process.cwd(), 'apps', 'backend', 'uploads'), {
+    prefix: '/uploads',
+  });
 
   const corsOrigin = process.env.CORS_ORIGIN?.split(',');
   if (!corsOrigin || corsOrigin.length === 0) {

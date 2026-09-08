@@ -1,7 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { unlink } from 'node:fs/promises';
+import { join } from 'node:path';
 import { Beer } from '../../common/entities/beer.entity';
+import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -59,6 +62,38 @@ export class BeersService {
 
     if (!beer) {
       throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+    }
+
+    return this.mapBeerToResponse(beer);
+  }
+
+  async updateImage(id: string, file?: Express.Multer.File): Promise<BeerResponse> {
+    if (!file) {
+      throw new BadRequestException('Es wurde keine Bilddatei hochgeladen.');
+    }
+
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+    }
+
+    const beer = await this.beerRepository.findOne({
+      where: { id: normalizedId },
+      relations: ['brewery', 'style'],
+    });
+
+    if (!beer) {
+      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+    }
+
+    const previousImageUrl = beer.imageUrl;
+    beer.imageUrl = `/uploads/beers/${file.filename}`;
+    await this.beerRepository.save(beer);
+
+    if (previousImageUrl?.startsWith('/uploads/beers/')) {
+      await unlink(
+        join(UPLOAD_ROOT, 'beers', previousImageUrl.replace('/uploads/beers/', '')),
+      ).catch(() => undefined);
     }
 
     return this.mapBeerToResponse(beer);

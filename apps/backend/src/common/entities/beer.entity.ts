@@ -21,6 +21,10 @@ export class Beer {
   @Column({ type: 'int', unique: true, nullable: true })
   sourceId!: number;
 
+  // External id from Open Food Facts (product barcode). Upsert key for the OFF seed.
+  @Column({ nullable: true, unique: true })
+  externalId!: string;
+
   @Column()
   name!: string;
 

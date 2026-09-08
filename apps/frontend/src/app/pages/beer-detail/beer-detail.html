@@ -11,7 +11,7 @@
       <div class="beer-detail-image-wrapper">
         <img
           class="beer-detail-image"
-          [src]="selectedBeer.imageUrl"
+          [src]="selectedBeer.imageUrl | mediaUrl"
           [alt]="selectedBeer.name + ' von ' + selectedBeer.brewery"
           (error)="$any($event.target).src = '/public/beer-placeholder.png'"
         />

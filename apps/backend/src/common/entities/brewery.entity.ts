@@ -11,6 +11,10 @@ export class Brewery {
   @Column({ type: 'int', unique: true, nullable: true })
   sourceId!: number;
 
+  // External id for the OFF seed: a slug of the brand name, used as the upsert key.
+  @Column({ nullable: true, unique: true })
+  externalId!: string;
+
   @Column()
   name!: string;
 
