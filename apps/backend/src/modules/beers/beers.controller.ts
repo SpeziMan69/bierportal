@@ -1,9 +1,13 @@
 import {
+  Body,
   Controller,
   DefaultValuePipe,
+  Delete,
   Get,
+  HttpCode,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Query,
   UploadedFile,
@@ -15,6 +19,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BeersService } from './beers.service';
 import { imageUploadOptions } from '../../common/upload/image-upload.options';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
+import { CreateBeerDto } from './dto/create-beer.dto';
+import { UpdateBeerDto } from './dto/update-beer.dto';
 
 @ApiTags('beers')
 @Controller('beers')
@@ -39,6 +45,37 @@ export class BeersController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.beersService.findOne(id);
+  }
+
+  @ApiOperation({
+    summary: 'Create a new beer',
+    description: 'Creates a new beer. Requires authentication.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Post()
+  create(@Body() createBeerDto: CreateBeerDto) {
+    return this.beersService.create(createBeerDto);
+  }
+
+  @ApiOperation({
+    summary: 'Update an existing beer',
+    description: 'Updates the given fields of a beer by its UUID. Requires authentication.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateBeerDto: UpdateBeerDto) {
+    return this.beersService.update(id, updateBeerDto);
+  }
+
+  @ApiOperation({
+    summary: 'Delete a beer',
+    description: 'Soft-deletes a beer by its UUID (marks it inactive). Requires authentication.',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Delete(':id')
+  @HttpCode(204)
+  remove(@Param('id') id: string) {
+    return this.beersService.remove(id);
   }
 
   @ApiOperation({

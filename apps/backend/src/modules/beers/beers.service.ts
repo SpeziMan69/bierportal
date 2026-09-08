@@ -4,7 +4,11 @@ import { Repository } from 'typeorm';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Beer } from '../../common/entities/beer.entity';
+import { Brewery } from '../../common/entities/brewery.entity';
+import { BeerStyle } from '../../common/entities/beer-style.entity';
 import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
+import { CreateBeerDto } from './dto/create-beer.dto';
+import { UpdateBeerDto } from './dto/update-beer.dto';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -25,7 +29,94 @@ export class BeersService {
   constructor(
     @InjectRepository(Beer)
     private readonly beerRepository: Repository<Beer>,
+    @InjectRepository(Brewery)
+    private readonly breweryRepository: Repository<Brewery>,
+    @InjectRepository(BeerStyle)
+    private readonly styleRepository: Repository<BeerStyle>,
   ) {}
+
+  async create(dto: CreateBeerDto): Promise<BeerResponse> {
+    const beer = this.beerRepository.create({
+      name: dto.name,
+      description: dto.description,
+      abv: dto.abv,
+      ibu: dto.ibu,
+      ebc: dto.ebc,
+      imageUrl: dto.imageUrl,
+    });
+
+    if (dto.breweryId) {
+      beer.brewery = await this.resolveBrewery(dto.breweryId);
+    }
+    if (dto.styleId) {
+      beer.style = await this.resolveStyle(dto.styleId);
+    }
+
+    const saved = await this.beerRepository.save(beer);
+    return this.mapBeerToResponse(saved);
+  }
+
+  async update(id: string, dto: UpdateBeerDto): Promise<BeerResponse> {
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+    }
+
+    const beer = await this.beerRepository.findOne({
+      where: { id: normalizedId },
+      relations: ['brewery', 'style'],
+    });
+    if (!beer) {
+      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+    }
+
+    if (dto.name !== undefined) beer.name = dto.name;
+    if (dto.description !== undefined) beer.description = dto.description;
+    if (dto.abv !== undefined) beer.abv = dto.abv;
+    if (dto.ibu !== undefined) beer.ibu = dto.ibu;
+    if (dto.ebc !== undefined) beer.ebc = dto.ebc;
+    if (dto.imageUrl !== undefined) beer.imageUrl = dto.imageUrl;
+    if (dto.breweryId !== undefined) {
+      beer.brewery = await this.resolveBrewery(dto.breweryId);
+    }
+    if (dto.styleId !== undefined) {
+      beer.style = await this.resolveStyle(dto.styleId);
+    }
+
+    const saved = await this.beerRepository.save(beer);
+    return this.mapBeerToResponse(saved);
+  }
+
+  async remove(id: string): Promise<void> {
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+    }
+
+    const beer = await this.beerRepository.findOne({ where: { id: normalizedId, isActive: true } });
+    if (!beer) {
+      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+    }
+
+    beer.isActive = false;
+    await this.beerRepository.save(beer);
+  }
+
+  private async resolveBrewery(breweryId: string): Promise<Brewery> {
+    const brewery = await this.breweryRepository.findOne({ where: { id: breweryId } });
+    if (!brewery) {
+      throw new NotFoundException(`Die Brauerei mit der ID ${breweryId} wurde nicht gefunden.`);
+    }
+    return brewery;
+  }
+
+  private async resolveStyle(styleId: string): Promise<BeerStyle> {
+    const style = await this.styleRepository.findOne({ where: { id: styleId } });
+    if (!style) {
+      throw new NotFoundException(`Der Bierstil mit der ID ${styleId} wurde nicht gefunden.`);
+    }
+    return style;
+  }
 
   async findAll(page = 1, limit = 24) {
     const safePage = Math.max(1, page);
