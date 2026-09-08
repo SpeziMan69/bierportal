@@ -9,7 +9,8 @@ export class UsersController {
 
   @ApiOperation({
     summary: 'Get a user profile',
-    description: 'Returns the public profile (username, picture, created date) plus review and like counts.',
+    description:
+      'Returns the public profile (username, picture, created date) plus review and like counts.',
   })
   @Get(':id')
   getProfile(@Param('id') id: string) {

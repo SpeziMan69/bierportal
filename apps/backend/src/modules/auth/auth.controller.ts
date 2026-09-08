@@ -39,7 +39,8 @@ export class AuthController {
 
   @ApiOperation({
     summary: 'Log in with email/username and password',
-    description: 'On success sets an httpOnly `token` session cookie and returns the user id/email.',
+    description:
+      'On success sets an httpOnly `token` session cookie and returns the user id/email.',
   })
   @Throttle({ default: { limit: 5, ttl: 60000 } })
   @Post('login')
