@@ -34,7 +34,7 @@ export class Review {
   updatedAt!: Date;
 
   // Relations
-  @ManyToOne(() => User, (user) => user.reviews)
+  @ManyToOne(() => User, (user) => user.reviews, { onDelete: 'CASCADE' })
   user!: User;
 
   @ManyToOne(() => Beer, (beer) => beer.reviews)

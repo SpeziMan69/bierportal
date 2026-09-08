@@ -1,4 +1,15 @@
-import { Body, Controller, Get, HttpCode, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Patch,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
 import { Request, Response } from 'express';
 import { JwtAuthGuard } from './guards/jwt.authguard';
 import { GoogleAuthGuard } from './guards/google.authguard';
@@ -86,5 +97,21 @@ export class AuthController {
         : `${process.env.FRONTEND_URL}/choose-username`,
     );
   }
-  //@Delete('delete_user')
+
+  @UseGuards(JwtAuthGuard)
+  @Delete('account')
+  @HttpCode(200)
+  async deleteAccount(
+    @Req() req: Request & { user: { id: string } },
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.authService.delete_user(req.user.id);
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
+    return { message: 'Account deleted' };
+  }
 }
