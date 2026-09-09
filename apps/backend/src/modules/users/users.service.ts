@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Review } from '../../common/entities/review.entity';
 import { ReviewLike } from '../../common/entities/review-like.entity';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -21,12 +22,12 @@ export class UsersService {
   private async getUserOrThrow(id: string): Promise<User> {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Der Benutzer mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The user with ID ${normalizedId} was not found.`);
     }
 
     const user = await this.userRepo.findOne({ where: { id: normalizedId } });
     if (!user) {
-      throw new NotFoundException(`Der Benutzer mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The user with ID ${normalizedId} was not found.`);
     }
     return user;
   }
@@ -88,6 +89,33 @@ export class UsersService {
           }
         : null,
     }));
+  }
+
+  async updateProfile(id: string, dto: UpdateMeDto) {
+    const user = await this.getUserOrThrow(id);
+
+    if (dto.username !== undefined && dto.username !== user.username) {
+      const existing = await this.userRepo.findOne({
+        where: { username: dto.username, id: Not(user.id) },
+      });
+      if (existing) {
+        throw new ConflictException('The username is already taken.');
+      }
+      user.username = dto.username;
+      user.isUsernameSet = true;
+    }
+
+    if (dto.picture !== undefined) {
+      user.picture = dto.picture;
+    }
+
+    const saved = await this.userRepo.save(user);
+    return {
+      id: saved.id,
+      username: saved.username,
+      picture: saved.picture,
+      createdAt: saved.createdAt,
+    };
   }
 
   async findById(id: string): Promise<User | null> {

@@ -18,10 +18,10 @@ export class AuthService {
     const existingEmail = await this.usersService.findByEmail(dto.email);
     const existingUsername = await this.usersService.findByUsername(dto.username);
     if (existingUsername) {
-      throw new ConflictException('Registrierung fehlgeschlagen - Benutzername bereits vergeben');
+      throw new ConflictException('Registration failed - username already taken');
     }
     if (existingEmail) {
-      throw new ConflictException('Registrierung fehlgeschlagen - Email bereits vergeben');
+      throw new ConflictException('Registration failed - email already taken');
     }
     const passwordHash = await bcrypt.hash(dto.password, 12);
     const user = await this.usersService.create({
@@ -41,11 +41,11 @@ export class AuthService {
       user = await this.usersService.findByUsername(dto.identifier);
     }
     if (!user?.passwordHash) {
-      throw new UnauthorizedException('Ungültige Anmeldedaten');
+      throw new UnauthorizedException('Invalid credentials');
     }
     const valid = await bcrypt.compare(dto.password, user.passwordHash);
     if (!valid) {
-      throw new UnauthorizedException('Ungültige Anmeldedaten');
+      throw new UnauthorizedException('Invalid credentials');
     }
     const payload = {
       sub: user.id,
@@ -71,7 +71,7 @@ export class AuthService {
   async setUsername(userId: string, username: string) {
     const existing = await this.usersService.findByUsername(username);
     if (existing) {
-      throw new ConflictException('Username bereits vergeben');
+      throw new ConflictException('Username already taken');
     }
     const user = await this.usersService.update(userId, { username, isUsernameSet: true });
     return {

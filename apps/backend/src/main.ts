@@ -6,6 +6,7 @@ import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'node:path';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -18,7 +19,7 @@ async function bootstrap() {
 
   const corsOrigin = process.env.CORS_ORIGIN?.split(',');
   if (!corsOrigin || corsOrigin.length === 0) {
-    throw new Error('CORS_ORIGIN muss in .env gesetzt sein');
+    throw new Error('CORS_ORIGIN must be set in .env');
   }
   app.enableCors({
     origin: corsOrigin,
@@ -33,6 +34,8 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   const config = new DocumentBuilder()
     .setTitle('My API')

@@ -5,8 +5,6 @@ import { diskStorage } from 'multer';
 import { extname, join } from 'node:path';
 import type { Request } from 'express';
 
-// Matches @nestjs/platform-express's MulterOptions.fileFilter callback shape,
-// which is stricter (non-overloaded) than multer's own FileFilterCallback type.
 type FileFilterCallback = (error: Error | null, acceptFile: boolean) => void;
 
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -41,7 +39,7 @@ export function imageUploadOptions(subfolder: 'beers' | 'breweries') {
     }),
     fileFilter: (_req: Request, file: Express.Multer.File, callback: FileFilterCallback) => {
       if (!ALLOWED_MIME_TYPES.has(file.mimetype)) {
-        callback(new BadRequestException('Nur JPEG-, PNG- oder WebP-Bilder sind erlaubt.'), false);
+        callback(new BadRequestException('Only JPEG, PNG or WebP images are allowed.'), false);
         return;
       }
       callback(null, true);

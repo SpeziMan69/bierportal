@@ -27,15 +27,44 @@ export class BreweriesService {
     return this.breweryRepository.save(brewery);
   }
 
-  async update(id: string, dto: UpdateBreweryDto): Promise<Brewery> {
+  async findAll(page = 1, limit = 24) {
+    const [items, total] = await this.breweryRepository.findAndCount({
+      order: { name: 'ASC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      items,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async findOne(id: string): Promise<Brewery> {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Die Brauerei mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
     const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
     if (!brewery) {
-      throw new NotFoundException(`Die Brauerei mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
+    }
+    return brewery;
+  }
+
+  async update(id: string, dto: UpdateBreweryDto): Promise<Brewery> {
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
+    }
+
+    const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
+    if (!brewery) {
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
     Object.assign(brewery, dto);
@@ -45,12 +74,12 @@ export class BreweriesService {
   async remove(id: string): Promise<void> {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Die Brauerei mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
     const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
     if (!brewery) {
-      throw new NotFoundException(`Die Brauerei mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
     try {
@@ -59,7 +88,7 @@ export class BreweriesService {
       // Postgres foreign-key violation: beers still reference this brewery.
       if (error instanceof QueryFailedError && (error.driverError as { code?: string }).code === '23503') {
         throw new ConflictException(
-          'Die Brauerei kann nicht gelöscht werden, solange ihr noch Biere zugeordnet sind.',
+          'The brewery cannot be deleted while beers are still assigned to it.',
         );
       }
       throw error;
@@ -68,17 +97,17 @@ export class BreweriesService {
 
   async updateLogo(id: string, file?: Express.Multer.File) {
     if (!file) {
-      throw new BadRequestException('Es wurde keine Bilddatei hochgeladen.');
+      throw new BadRequestException('No image file was uploaded.');
     }
 
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Die Brauerei mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
     const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
     if (!brewery) {
-      throw new NotFoundException(`Die Brauerei mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
     const previousLogoUrl = brewery.logoUrl;

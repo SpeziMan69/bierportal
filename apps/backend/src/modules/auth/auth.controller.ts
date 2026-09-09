@@ -92,7 +92,7 @@ export class AuthController {
       sameSite: 'strict',
       path: '/',
     });
-    return { message: 'Logout erfolgreich' };
+    return { message: 'Logout successful' };
   }
 
   @ApiOperation({

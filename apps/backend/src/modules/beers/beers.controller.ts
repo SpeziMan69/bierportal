@@ -16,6 +16,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { BeersService } from './beers.service';
 import { imageUploadOptions } from '../../common/upload/image-upload.options';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
@@ -51,6 +52,7 @@ export class BeersController {
     summary: 'Create a new beer',
     description: 'Creates a new beer. Requires authentication.',
   })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() createBeerDto: CreateBeerDto) {
@@ -61,6 +63,7 @@ export class BeersController {
     summary: 'Update an existing beer',
     description: 'Updates the given fields of a beer by its UUID. Requires authentication.',
   })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateBeerDto: UpdateBeerDto) {
@@ -71,6 +74,7 @@ export class BeersController {
     summary: 'Delete a beer',
     description: 'Soft-deletes a beer by its UUID (marks it inactive). Requires authentication.',
   })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @HttpCode(204)
@@ -82,6 +86,7 @@ export class BeersController {
     summary: 'Upload a beer image',
     description: 'Uploads/replaces the image for a beer. Requires authentication.',
   })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   @Post(':id/image')
   @UseInterceptors(FileInterceptor('image', imageUploadOptions('beers')))

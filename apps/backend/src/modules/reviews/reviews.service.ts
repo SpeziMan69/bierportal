@@ -33,7 +33,7 @@ export class ReviewsService {
       where: { user: { id: userId }, beer: { id: beer.id } },
     });
     if (existing) {
-      throw new ConflictException('Du hast dieses Bier bereits bewertet.');
+      throw new ConflictException('You have already reviewed this beer.');
     }
 
     const review = this.reviewRepo.create({
@@ -90,14 +90,14 @@ export class ReviewsService {
   async like(userId: string, reviewId: string) {
     const review = await this.getReviewOrThrow(reviewId);
     if (review.user.id === userId) {
-      throw new ForbiddenException('Du kannst deine eigene Bewertung nicht liken.');
+      throw new ForbiddenException('You cannot like your own review.');
     }
 
     const existing = await this.likeRepo.findOne({
       where: { user: { id: userId }, review: { id: review.id } },
     });
     if (existing) {
-      throw new ConflictException('Du hast diese Bewertung bereits geliked.');
+      throw new ConflictException('You have already liked this review.');
     }
 
     await this.likeRepo.save(this.likeRepo.create({ user: { id: userId } as User, review }));
@@ -111,7 +111,7 @@ export class ReviewsService {
       where: { user: { id: userId }, review: { id: normalizedId } },
     });
     if (!like) {
-      throw new NotFoundException('Du hast diese Bewertung nicht geliked.');
+      throw new NotFoundException('You have not liked this review.');
     }
 
     await this.likeRepo.remove(like);
@@ -138,7 +138,7 @@ export class ReviewsService {
     const normalizedId = this.normalizeId(beerId);
     const beer = await this.beerRepo.findOne({ where: { id: normalizedId, isActive: true } });
     if (!beer) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
     return beer;
   }
@@ -150,7 +150,7 @@ export class ReviewsService {
       relations: ['user', 'beer'],
     });
     if (!review) {
-      throw new NotFoundException(`Die Bewertung mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The review with ID ${normalizedId} was not found.`);
     }
     return review;
   }
@@ -158,7 +158,7 @@ export class ReviewsService {
   private async getOwnedReviewOrThrow(userId: string, id: string): Promise<Review> {
     const review = await this.getReviewOrThrow(id);
     if (review.user.id !== userId) {
-      throw new ForbiddenException('Du kannst nur deine eigenen Bewertungen bearbeiten.');
+      throw new ForbiddenException('You can only edit your own reviews.');
     }
     return review;
   }
@@ -175,7 +175,7 @@ export class ReviewsService {
   private normalizeId(id: string): string {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Die ID ${normalizedId} ist ungültig.`);
+      throw new NotFoundException(`The ID ${normalizedId} is invalid.`);
     }
     return normalizedId;
   }

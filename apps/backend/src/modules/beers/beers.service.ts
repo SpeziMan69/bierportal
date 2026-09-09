@@ -54,7 +54,7 @@ export class BeersService {
   async update(id: string, dto: UpdateBeerDto): Promise<BeerResponse> {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     const beer = await this.beerRepository.findOne({
@@ -62,7 +62,7 @@ export class BeersService {
       relations: ['brewery'],
     });
     if (!beer) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     if (dto.name !== undefined) beer.name = dto.name;
@@ -83,12 +83,12 @@ export class BeersService {
   async remove(id: string): Promise<void> {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     const beer = await this.beerRepository.findOne({ where: { id: normalizedId, isActive: true } });
     if (!beer) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     beer.isActive = false;
@@ -98,7 +98,7 @@ export class BeersService {
   private async resolveBrewery(breweryId: string): Promise<Brewery> {
     const brewery = await this.breweryRepository.findOne({ where: { id: breweryId } });
     if (!brewery) {
-      throw new NotFoundException(`Die Brauerei mit der ID ${breweryId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The brewery with ID ${breweryId} was not found.`);
     }
     return brewery;
   }
@@ -128,7 +128,7 @@ export class BeersService {
     const normalizedId = id.trim();
 
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     const beer = await this.beerRepository.findOne({
@@ -137,7 +137,7 @@ export class BeersService {
     });
 
     if (!beer) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     return this.mapBeerToResponse(beer);
@@ -145,12 +145,12 @@ export class BeersService {
 
   async updateImage(id: string, file?: Express.Multer.File): Promise<BeerResponse> {
     if (!file) {
-      throw new BadRequestException('Es wurde keine Bilddatei hochgeladen.');
+      throw new BadRequestException('No image file was uploaded.');
     }
 
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     const beer = await this.beerRepository.findOne({
@@ -159,7 +159,7 @@ export class BeersService {
     });
 
     if (!beer) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
     const previousImageUrl = beer.imageUrl;
@@ -176,18 +176,18 @@ export class BeersService {
   }
 
   private mapBeerToResponse(beer: Beer): BeerResponse {
-    const breweryName = beer.brewery?.name ?? 'Unbekannte Brauerei';
+    const breweryName = beer.brewery?.name ?? 'Unknown brewery';
 
     return {
       id: beer.id,
       name: beer.name,
       brewery: breweryName,
-      country: beer.brewery?.country ?? 'Unbekannt',
-      type: beer.style ?? 'Bier',
+      country: beer.brewery?.country ?? 'Unknown',
+      type: beer.style ?? 'Beer',
       alcohol: beer.abv != null ? Number(beer.abv) : null,
       rating: beer.ratingCount > 0 ? Number(beer.avgRating) : null,
       imageUrl: beer.imageUrl ?? '/public/beer-placeholder.png',
-      description: beer.description ?? `${beer.name} von ${breweryName}.`,
+      description: beer.description ?? `${beer.name} by ${breweryName}.`,
     };
   }
 }

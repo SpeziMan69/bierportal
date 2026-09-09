@@ -45,7 +45,7 @@ export class UserBeersService {
 
   async findAllForUser(userId: string, status?: BeerStatus) {
     if (status !== undefined && !Object.values(BeerStatus).includes(status)) {
-      throw new NotFoundException(`Unbekannter Status: ${status}`);
+      throw new NotFoundException(`Unknown status: ${status}`);
     }
 
     const entries = await this.entryRepo.find({
@@ -79,7 +79,7 @@ export class UserBeersService {
     const normalizedId = this.normalizeId(beerId);
     const beer = await this.beerRepo.findOne({ where: { id: normalizedId, isActive: true } });
     if (!beer) {
-      throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
     return beer;
   }
@@ -91,10 +91,10 @@ export class UserBeersService {
       relations: ['user', 'beer', 'beer.brewery'],
     });
     if (!entry) {
-      throw new NotFoundException(`Der Eintrag mit der ID ${normalizedId} wurde nicht gefunden.`);
+      throw new NotFoundException(`The entry with ID ${normalizedId} was not found.`);
     }
     if (entry.user.id !== userId) {
-      throw new ForbiddenException('Du kannst nur deine eigenen Einträge bearbeiten.');
+      throw new ForbiddenException('You can only edit your own entries.');
     }
     return entry;
   }
@@ -109,7 +109,7 @@ export class UserBeersService {
   private normalizeId(id: string): string {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
-      throw new NotFoundException(`Die ID ${normalizedId} ist ungültig.`);
+      throw new NotFoundException(`The ID ${normalizedId} is invalid.`);
     }
     return normalizedId;
   }
