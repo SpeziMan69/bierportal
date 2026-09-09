@@ -5,6 +5,7 @@
     <a routerLink="/">Home</a>
     <a routerLink="/beers">Biere</a>
     @if (auth.user(); as user) {
+      <a routerLink="/profile">Profil</a>
       <span class="nav-user">Angemeldet als {{ user.username }}</span>
       <button type="button" class="logout-btn" (click)="logout()">Abmelden</button>
     } @else {
