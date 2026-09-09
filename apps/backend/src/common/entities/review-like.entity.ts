@@ -12,9 +12,9 @@ export class ReviewLike {
   createdAt!: Date;
 
   // Relations
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { onDelete: 'CASCADE' })
   user!: User;
 
-  @ManyToOne(() => Review, (review) => review.likes)
+  @ManyToOne(() => Review, (review) => review.likes, { onDelete: 'CASCADE' })
   review!: Review;
 }

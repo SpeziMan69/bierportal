@@ -5,7 +5,7 @@
 >
   <img
     class="beer-card-image"
-    [src]="beer.imageUrl"
+    [src]="beer.imageUrl | mediaUrl"
     [alt]="beer.name + ' von ' + beer.brewery"
     loading="lazy"
     (error)="$any($event.target).src = '/public/beer-placeholder.png'"
@@ -28,6 +28,6 @@
         Noch nicht bewertet
       }
     </p>
-    <span class="beer-card-link">Details ansehen →</span>
+    <span class="beer-card-link">Details ansehen <span aria-hidden="true">→</span></span>
   </div>
 </a>

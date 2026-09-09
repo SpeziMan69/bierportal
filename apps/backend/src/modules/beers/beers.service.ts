@@ -1,29 +1,14 @@
-import { BadGatewayException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { unlink } from 'node:fs/promises';
+import { join } from 'node:path';
+import { Beer } from '../../common/entities/beer.entity';
+import { Brewery } from '../../common/entities/brewery.entity';
+import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
+import { CreateBeerDto, UpdateBeerDto } from '@bierportal/dtos';
 
-interface OpenFoodFactsProduct {
-  code?: string;
-  product_name?: string;
-  brands?: string;
-  countries?: string;
-  countries_tags?: string[];
-  categories?: string;
-  categories_tags?: string[];
-  alcohol_100g?: number;
-  image_front_url?: string;
-}
-
-interface OpenFoodFactsSearchResponse {
-  count?: number;
-  page?: number;
-  page_size?: number;
-  products?: OpenFoodFactsProduct[];
-}
-
-interface OpenFoodFactsProductResponse {
-  status?: number;
-  status_verbose?: string;
-  product?: OpenFoodFactsProduct;
-}
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export interface BeerResponse {
   id: string;
@@ -37,192 +22,207 @@ export interface BeerResponse {
   description: string;
 }
 
+export type BeerSort = 'name-asc' | 'rating-desc' | 'alcohol-asc' | 'alcohol-desc';
+
+export interface BeerSearchOptions {
+  page?: number;
+  limit?: number;
+  q?: string;
+  style?: string;
+  country?: string;
+  sort?: BeerSort;
+}
+
 @Injectable()
 export class BeersService {
-  private readonly externalApiUrl = 'https://world.openfoodfacts.net/api/v2/search';
-  private readonly externalProductApiUrl = 'https://world.openfoodfacts.net/api/v2/product';
+  constructor(
+    @InjectRepository(Beer)
+    private readonly beerRepository: Repository<Beer>,
+    @InjectRepository(Brewery)
+    private readonly breweryRepository: Repository<Brewery>,
+  ) {}
 
-  async findAll(page = 1, limit = 100) {
-    const safePage = Math.max(1, page);
-    const safeLimit = Math.min(Math.max(1, limit), 100);
+  async create(dto: CreateBeerDto): Promise<BeerResponse> {
+    const beer = this.beerRepository.create({
+      name: dto.name,
+      description: dto.description,
+      abv: dto.abv,
+      ibu: dto.ibu,
+      ebc: dto.ebc,
+      imageUrl: dto.imageUrl,
+      style: dto.style,
+    });
 
-    const url = new URL(this.externalApiUrl);
-
-    url.searchParams.set('categories_tags_en', 'beers');
-    url.searchParams.set('page', String(safePage));
-    url.searchParams.set('page_size', String(safeLimit));
-    url.searchParams.set(
-      'fields',
-      [
-        'code',
-        'product_name',
-        'brands',
-        'countries',
-        'countries_tags',
-        'categories',
-        'categories_tags',
-        'alcohol_100g',
-        'image_front_url',
-      ].join(','),
-    );
-
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'Bierportal/1.0 (https://github.com/SpeziMan69/bierportal)',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Open Food Facts antwortete mit Status ${response.status}`);
-      }
-
-      const data = (await response.json()) as OpenFoodFactsSearchResponse;
-
-      const items = (data.products ?? [])
-        .filter(
-          (
-            product,
-          ): product is OpenFoodFactsProduct & {
-            code: string;
-            product_name: string;
-          } => Boolean(product.code && product.product_name?.trim()),
-        )
-        .map((product) => this.mapProductToBeer(product));
-
-      const total = data.count ?? items.length;
-
-      return {
-        items,
-        page: safePage,
-        limit: safeLimit,
-        total,
-        totalPages: Math.ceil(total / safeLimit),
-      };
-    } catch (error) {
-      console.error('Fehler beim Abrufen der Bierdaten:', error);
-
-      throw new BadGatewayException('Die externe Bierdatenquelle ist momentan nicht erreichbar.');
+    if (dto.breweryId) {
+      beer.brewery = await this.resolveBrewery(dto.breweryId);
     }
+
+    const saved = await this.beerRepository.save(beer);
+    return this.mapBeerToResponse(saved);
+  }
+
+  async update(id: string, dto: UpdateBeerDto): Promise<BeerResponse> {
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
+    }
+
+    const beer = await this.beerRepository.findOne({
+      where: { id: normalizedId },
+      relations: ['brewery'],
+    });
+    if (!beer) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
+    }
+
+    if (dto.name !== undefined) beer.name = dto.name;
+    if (dto.description !== undefined) beer.description = dto.description;
+    if (dto.abv !== undefined) beer.abv = dto.abv;
+    if (dto.ibu !== undefined) beer.ibu = dto.ibu;
+    if (dto.ebc !== undefined) beer.ebc = dto.ebc;
+    if (dto.imageUrl !== undefined) beer.imageUrl = dto.imageUrl;
+    if (dto.style !== undefined) beer.style = dto.style;
+    if (dto.breweryId !== undefined) {
+      beer.brewery = await this.resolveBrewery(dto.breweryId);
+    }
+
+    const saved = await this.beerRepository.save(beer);
+    return this.mapBeerToResponse(saved);
+  }
+
+  async remove(id: string): Promise<void> {
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
+    }
+
+    const beer = await this.beerRepository.findOne({ where: { id: normalizedId, isActive: true } });
+    if (!beer) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
+    }
+
+    beer.isActive = false;
+    await this.beerRepository.save(beer);
+  }
+
+  private async resolveBrewery(breweryId: string): Promise<Brewery> {
+    const brewery = await this.breweryRepository.findOne({ where: { id: breweryId } });
+    if (!brewery) {
+      throw new NotFoundException(`The brewery with ID ${breweryId} was not found.`);
+    }
+    return brewery;
+  }
+
+  async findAll(options: BeerSearchOptions = {}) {
+    const safePage = Math.max(1, options.page ?? 1);
+    const safeLimit = Math.min(Math.max(1, options.limit ?? 24), 100);
+
+    const qb = this.beerRepository
+      .createQueryBuilder('beer')
+      .leftJoinAndSelect('beer.brewery', 'brewery')
+      .where('beer.isActive = :active', { active: true });
+
+    if (options.q?.trim()) {
+      qb.andWhere('(beer.name ILIKE :q OR brewery.name ILIKE :q)', { q: `%${options.q.trim()}%` });
+    }
+    if (options.style?.trim()) {
+      qb.andWhere('beer.style ILIKE :style', { style: `%${options.style.trim()}%` });
+    }
+    if (options.country?.trim()) {
+      qb.andWhere('brewery.country ILIKE :country', { country: `%${options.country.trim()}%` });
+    }
+
+    switch (options.sort) {
+      case 'rating-desc':
+        qb.orderBy('beer.avgRating', 'DESC');
+        break;
+      case 'alcohol-asc':
+        qb.orderBy('beer.abv', 'ASC', 'NULLS LAST');
+        break;
+      case 'alcohol-desc':
+        qb.orderBy('beer.abv', 'DESC', 'NULLS LAST');
+        break;
+      default:
+        qb.orderBy('beer.name', 'ASC');
+    }
+
+    qb.skip((safePage - 1) * safeLimit).take(safeLimit);
+
+    const [beers, total] = await qb.getManyAndCount();
+
+    return {
+      items: beers.map((beer) => this.mapBeerToResponse(beer)),
+      page: safePage,
+      limit: safeLimit,
+      total,
+      totalPages: Math.ceil(total / safeLimit),
+    };
   }
 
   async findOne(id: string): Promise<BeerResponse> {
     const normalizedId = id.trim();
 
-    const url = new URL(`${this.externalProductApiUrl}/${encodeURIComponent(normalizedId)}.json`);
-
-    url.searchParams.set(
-      'fields',
-      [
-        'code',
-        'product_name',
-        'brands',
-        'countries',
-        'countries_tags',
-        'categories',
-        'categories_tags',
-        'alcohol_100g',
-        'image_front_url',
-      ].join(','),
-    );
-
-    try {
-      const response = await fetch(url, {
-        headers: {
-          'User-Agent': 'Bierportal/1.0 (https://github.com/SpeziMan69/bierportal)',
-        },
-      });
-
-      if (response.status === 404) {
-        throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
-      }
-
-      if (!response.ok) {
-        throw new Error(`Open Food Facts antwortete mit Status ${response.status}`);
-      }
-
-      const data = (await response.json()) as OpenFoodFactsProductResponse;
-      const product = data.product;
-
-      if (data.status === 0 || !product?.code || !product.product_name?.trim()) {
-        throw new NotFoundException(`Das Bier mit der ID ${normalizedId} wurde nicht gefunden.`);
-      }
-
-      return this.mapProductToBeer({
-        ...product,
-        code: product.code,
-        product_name: product.product_name,
-      });
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-
-      console.error('Fehler beim Abrufen des Biers %s:', normalizedId, error);
-
-      throw new BadGatewayException(
-        'Das Bier konnte momentan nicht von der externen Datenquelle geladen werden.',
-      );
-    }
-  }
-
-  private mapProductToBeer(
-    product: OpenFoodFactsProduct & {
-      code: string;
-      product_name: string;
-    },
-  ): BeerResponse {
-    const brewery = this.firstValue(product.brands) ?? 'Unbekannte Brauerei';
-
-    const country =
-      this.firstValue(product.countries) ??
-      this.formatTag(product.countries_tags?.[0]) ??
-      'Unbekannt';
-
-    const type =
-      this.findBeerType(product.categories_tags) ?? this.firstValue(product.categories) ?? 'Bier';
-
-    return {
-      id: product.code,
-      name: product.product_name.trim(),
-      brewery,
-      country,
-      type,
-      alcohol: typeof product.alcohol_100g === 'number' ? product.alcohol_100g : null,
-      rating: null,
-      imageUrl: product.image_front_url ?? '/public/beer-placeholder.png',
-      description: `${product.product_name.trim()} von ${brewery}.`,
-    };
-  }
-
-  private firstValue(value?: string): string | undefined {
-    return value
-      ?.split(',')
-      .map((part) => part.trim())
-      .find(Boolean);
-  }
-
-  private formatTag(tag?: string): string | undefined {
-    if (!tag) {
-      return undefined;
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
     }
 
-    const withoutLanguage = tag.includes(':') ? tag.split(':')[1] : tag;
-
-    return withoutLanguage
-      .split('-')
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  }
-
-  private findBeerType(tags?: string[]): string | undefined {
-    const ignoredCategories = new Set(['beers', 'beer', 'alcoholic-beverages', 'beverages']);
-
-    const specificTag = tags?.find((tag) => {
-      const normalizedTag = tag.includes(':') ? tag.split(':')[1] : tag;
-      return !ignoredCategories.has(normalizedTag);
+    const beer = await this.beerRepository.findOne({
+      where: { id: normalizedId, isActive: true },
+      relations: ['brewery'],
     });
 
-    return this.formatTag(specificTag);
+    if (!beer) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
+    }
+
+    return this.mapBeerToResponse(beer);
+  }
+
+  async updateImage(id: string, file?: Express.Multer.File): Promise<BeerResponse> {
+    if (!file) {
+      throw new BadRequestException('No image file was uploaded.');
+    }
+
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
+    }
+
+    const beer = await this.beerRepository.findOne({
+      where: { id: normalizedId },
+      relations: ['brewery'],
+    });
+
+    if (!beer) {
+      throw new NotFoundException(`The beer with ID ${normalizedId} was not found.`);
+    }
+
+    const previousImageUrl = beer.imageUrl;
+    beer.imageUrl = `/uploads/beers/${file.filename}`;
+    await this.beerRepository.save(beer);
+
+    if (previousImageUrl?.startsWith('/uploads/beers/')) {
+      await unlink(
+        join(UPLOAD_ROOT, 'beers', previousImageUrl.replace('/uploads/beers/', '')),
+      ).catch(() => undefined);
+    }
+
+    return this.mapBeerToResponse(beer);
+  }
+
+  private mapBeerToResponse(beer: Beer): BeerResponse {
+    const breweryName = beer.brewery?.name ?? 'Unknown brewery';
+
+    return {
+      id: beer.id,
+      name: beer.name,
+      brewery: breweryName,
+      country: beer.brewery?.country ?? 'Unknown',
+      type: beer.style ?? 'Beer',
+      alcohol: beer.abv != null ? Number(beer.abv) : null,
+      rating: beer.ratingCount > 0 ? Number(beer.avgRating) : null,
+      imageUrl: beer.imageUrl ?? '/public/beer-placeholder.png',
+      description: beer.description ?? `${beer.name} by ${breweryName}.`,
+    };
   }
 }

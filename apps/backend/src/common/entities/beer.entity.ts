@@ -7,7 +7,6 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import { Brewery } from './brewery.entity';
-import { BeerStyle } from './beer-style.entity';
 import { Review } from './review.entity';
 import { UserBeerEntry } from './user-entry.entity';
 
@@ -20,6 +19,10 @@ export class Beer {
   // Used as the upsert key so re-running a seed doesn't create duplicates.
   @Column({ type: 'int', unique: true, nullable: true })
   sourceId!: number;
+
+  // External id from Open Food Facts (product barcode). Upsert key for the OFF seed.
+  @Column({ nullable: true, unique: true })
+  externalId!: string;
 
   @Column()
   name!: string;
@@ -39,9 +42,8 @@ export class Beer {
   @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true })
   ebc!: number;
 
-  // Beer color in degrees SRM, as reported by imported sources (distinct unit from ebc above).
-  @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true })
-  srm!: number;
+  @Column({ nullable: true })
+  style!: string;
 
   @Column({ default: true })
   isActive!: boolean;
@@ -54,9 +56,6 @@ export class Beer {
   // instead of being dropped.
   @ManyToOne(() => Brewery, (brewery) => brewery.beers, { eager: true, nullable: true })
   brewery!: Brewery;
-
-  @ManyToOne(() => BeerStyle, (beerStyle) => beerStyle.beers, { nullable: true })
-  style!: BeerStyle;
 
   @OneToMany(() => Review, (review) => review.beer)
   reviews!: Review[];

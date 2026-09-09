@@ -10,6 +10,14 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { BeersModule } from './modules/beers/beers.module';
+import { BreweriesModule } from './modules/breweries/breweries.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
+import { UserBeersModule } from './modules/user-beers/user-beers.module';
+import { Beer } from './common/entities/beer.entity';
+import { Brewery } from './common/entities/brewery.entity';
+import { Review } from './common/entities/review.entity';
+import { ReviewLike } from './common/entities/review-like.entity';
+import { UserBeerEntry } from './common/entities/user-entry.entity';
 
 @Module({
   imports: [
@@ -36,7 +44,8 @@ import { BeersModule } from './modules/beers/beers.module';
         username: config.get<string>('DB_USER'),
         password: config.get<string>('DB_PASS'),
         database: config.get<string>('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}', User],
+        // Glob-based autoloading breaks once webpack bundles everything into main.js, so list entities explicitly.
+        entities: [User, Beer, Brewery, Review, ReviewLike, UserBeerEntry],
         synchronize: process.env.NODE_ENV !== 'production',
       }),
     }),
@@ -44,6 +53,9 @@ import { BeersModule } from './modules/beers/beers.module';
     UsersModule,
     AuthModule,
     BeersModule,
+    BreweriesModule,
+    ReviewsModule,
+    UserBeersModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],

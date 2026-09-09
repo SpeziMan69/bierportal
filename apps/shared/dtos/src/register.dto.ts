@@ -13,7 +13,7 @@ export class RegisterDto {
 
   @MinLength(8, { message: 'Password must be at least 8 characters long' })
   @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W).*$/, {
-    message: 'Passwort muss Groß-, Kleinbuchstaben und Zahlen/Sonderzeichen enthalten',
+    message: 'Password must contain upper- and lowercase letters and numbers/special characters',
   })
   password!: string;
 }

@@ -16,7 +16,11 @@
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "baseUrl": ".",
+    "paths": {
+      "@bierportal/dtos": ["apps/shared/dtos/src/index.ts"]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

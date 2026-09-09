@@ -4,7 +4,13 @@
   <div class="nav-links">
     <a routerLink="/">Home</a>
     <a routerLink="/beers">Biere</a>
-    <a routerLink="/login">Anmelden</a>
-    <a routerLink="/register">Registrieren</a>
+    @if (auth.user(); as user) {
+      <span class="nav-user">Angemeldet als {{ user.username }}</span>
+      <button type="button" class="logout-btn" (click)="logout()">Abmelden</button>
+    } @else {
+      <span class="nav-user">Nicht angemeldet</span>
+      <a routerLink="/login">Anmelden</a>
+      <a routerLink="/register">Registrieren</a>
+    }
   </div>
 </nav>

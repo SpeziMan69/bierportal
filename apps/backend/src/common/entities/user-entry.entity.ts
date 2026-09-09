@@ -6,13 +6,11 @@ import {
   ManyToOne,
   Unique,
 } from 'typeorm';
+import { BeerStatus } from '@bierportal/dtos';
 import { User } from '../../modules/users/user.entity';
 import { Beer } from './beer.entity';
-export enum BeerStatus {
-  TRIED = 'tried',
-  WISHLIST = 'wishlist',
-  CELLAR = 'cellar',
-}
+
+export { BeerStatus };
 
 @Entity()
 @Unique(['user', 'beer'])
@@ -30,7 +28,7 @@ export class UserBeerEntry {
   addedAt!: Date;
 
   // Relations
-  @ManyToOne(() => User, (user) => user.beerEntries)
+  @ManyToOne(() => User, (user) => user.beerEntries, { onDelete: 'CASCADE' })
   user!: User;
 
   @ManyToOne(() => Beer, (beer) => beer.userEntries)

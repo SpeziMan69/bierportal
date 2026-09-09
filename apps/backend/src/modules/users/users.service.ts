@@ -1,14 +1,154 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
+import { unlink } from 'node:fs/promises';
+import { join } from 'node:path';
 import { User } from './user.entity';
+import { Review } from '../../common/entities/review.entity';
+import { ReviewLike } from '../../common/entities/review-like.entity';
+import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
+import { UpdateMeDto } from '@bierportal/dtos';
+
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Review)
+    private readonly reviewRepo: Repository<Review>,
+    @InjectRepository(ReviewLike)
+    private readonly likeRepo: Repository<ReviewLike>,
   ) {}
+
+  private async getUserOrThrow(id: string): Promise<User> {
+    const normalizedId = id.trim();
+    if (!UUID_REGEX.test(normalizedId)) {
+      throw new NotFoundException(`The user with ID ${normalizedId} was not found.`);
+    }
+
+    const user = await this.userRepo.findOne({ where: { id: normalizedId } });
+    if (!user) {
+      throw new NotFoundException(`The user with ID ${normalizedId} was not found.`);
+    }
+    return user;
+  }
+
+  async getProfile(id: string) {
+    const user = await this.getUserOrThrow(id);
+    const [reviewCount, likeCount] = await Promise.all([
+      this.reviewRepo.count({ where: { user: { id: user.id }, isDraft: false } }),
+      this.likeRepo.count({ where: { user: { id: user.id } } }),
+    ]);
+
+    return {
+      id: user.id,
+      username: user.username,
+      picture: user.picture,
+      createdAt: user.createdAt,
+      reviewCount,
+      likeCount,
+    };
+  }
+
+  async getReviews(id: string) {
+    const user = await this.getUserOrThrow(id);
+    const reviews = await this.reviewRepo.find({
+      where: { user: { id: user.id }, isDraft: false },
+      relations: ['beer'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return reviews.map((review) => ({
+      id: review.id,
+      rating: Number(review.rating),
+      text: review.text,
+      createdAt: review.createdAt,
+      updatedAt: review.updatedAt,
+      beer: review.beer ? { id: review.beer.id, name: review.beer.name } : null,
+    }));
+  }
+
+  async getLikes(id: string) {
+    const user = await this.getUserOrThrow(id);
+    const likes = await this.likeRepo.find({
+      where: { user: { id: user.id } },
+      relations: ['review', 'review.beer'],
+      order: { createdAt: 'DESC' },
+    });
+
+    return likes.map((like) => ({
+      id: like.id,
+      createdAt: like.createdAt,
+      review: like.review
+        ? {
+            id: like.review.id,
+            rating: Number(like.review.rating),
+            text: like.review.text,
+            beer: like.review.beer
+              ? { id: like.review.beer.id, name: like.review.beer.name }
+              : null,
+          }
+        : null,
+    }));
+  }
+
+  async updateProfile(id: string, dto: UpdateMeDto) {
+    const user = await this.getUserOrThrow(id);
+
+    if (dto.username !== undefined && dto.username !== user.username) {
+      const existing = await this.userRepo.findOne({
+        where: { username: dto.username, id: Not(user.id) },
+      });
+      if (existing) {
+        throw new ConflictException('The username is already taken.');
+      }
+      user.username = dto.username;
+      user.isUsernameSet = true;
+    }
+
+    if (dto.picture !== undefined) {
+      user.picture = dto.picture;
+    }
+
+    const saved = await this.userRepo.save(user);
+    return {
+      id: saved.id,
+      username: saved.username,
+      picture: saved.picture,
+      createdAt: saved.createdAt,
+    };
+  }
+
+  async updateAvatar(id: string, file?: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No image file was uploaded.');
+    }
+
+    const user = await this.getUserOrThrow(id);
+    const previousPicture = user.picture;
+    user.picture = `/uploads/users/${file.filename}`;
+    const saved = await this.userRepo.save(user);
+
+    if (previousPicture?.startsWith('/uploads/users/')) {
+      await unlink(
+        join(UPLOAD_ROOT, 'users', previousPicture.replace('/uploads/users/', '')),
+      ).catch(() => undefined);
+    }
+
+    return {
+      id: saved.id,
+      username: saved.username,
+      picture: saved.picture,
+      createdAt: saved.createdAt,
+    };
+  }
 
   async findById(id: string): Promise<User | null> {
     return this.userRepo.findOne({ where: { id } });

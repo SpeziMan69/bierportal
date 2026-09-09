@@ -1,7 +1,7 @@
 ```markdown
 # WebEng-Projekt
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 /
@@ -16,7 +16,7 @@
 └── tsconfig.base.json   # Shared TypeScript config
 ```
 
-## 🚀 Tech Stack
+## Tech Stack
 
 - **Frontend:** Angular 17+ (Standalone Components), TypeScript, SCSS
 - **Backend:** NestJS, TypeScript, TypeORM
@@ -24,7 +24,7 @@
 - **Build System:** NX Monorepo
 - **Infrastructure:** Docker
 
-## ⚙️ Setup
+## Setup
 
 1. **Install dependencies:**
    ```bash
@@ -54,7 +54,7 @@
 
 6. **Open browser:** http://localhost:4200
 
-## 📜 Available Scripts
+## Available Scripts
 
 ### Docker
 - `npm run docker:up` - Start database
@@ -80,7 +80,7 @@
 - `npm run lint` - Lint all apps
 - `npm run format` - Format all code
 
-## 🏗️ Development
+## Development
 
 ### Code Conventions
 - Angular 17+ Standalone Components
