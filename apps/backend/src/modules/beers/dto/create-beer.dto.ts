@@ -30,10 +30,10 @@ export class CreateBeerDto {
   imageUrl?: string;
 
   @IsOptional()
-  @IsUUID()
-  breweryId?: string;
+  @IsString()
+  style?: string;
 
   @IsOptional()
   @IsUUID()
-  styleId?: string;
+  breweryId?: string;
 }

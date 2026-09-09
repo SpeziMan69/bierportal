@@ -7,15 +7,12 @@ import { BeersController } from './beers.controller';
 import { BeersService } from './beers.service';
 import { Beer } from '../../common/entities/beer.entity';
 import { Brewery } from '../../common/entities/brewery.entity';
-import { BeerStyle } from '../../common/entities/beer-style.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
 
 const BEER_ID = 'b1111111-1111-4111-8111-111111111111';
 const BREWERY_ID = 'c2222222-2222-4222-8222-222222222222';
-const STYLE_ID = 'd3333333-3333-4333-8333-333333333333';
 
 const fakeBrewery = { id: BREWERY_ID, name: 'Test Brauerei', country: 'Deutschland' };
-const fakeStyle = { id: STYLE_ID, name: 'Pils' };
 
 const fakeBeer = {
   id: BEER_ID,
@@ -27,7 +24,7 @@ const fakeBeer = {
   imageUrl: '/uploads/beers/test.png',
   isActive: true,
   brewery: fakeBrewery,
-  style: fakeStyle,
+  style: 'Pils',
   avgRating: '4.20',
   ratingCount: 5,
 };
@@ -42,7 +39,6 @@ describe('BeersController (integration, mocked DB)', () => {
     save: jest.fn(),
   };
   const breweryRepo = { findOne: jest.fn() };
-  const styleRepo = { findOne: jest.fn() };
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -53,7 +49,6 @@ describe('BeersController (integration, mocked DB)', () => {
         BeersService,
         { provide: getRepositoryToken(Beer), useValue: beerRepo },
         { provide: getRepositoryToken(Brewery), useValue: breweryRepo },
-        { provide: getRepositoryToken(BeerStyle), useValue: styleRepo },
       ],
     })
       .overrideGuard(JwtAuthGuard)
@@ -112,6 +107,7 @@ describe('BeersController (integration, mocked DB)', () => {
       beerRepo.findOne.mockResolvedValue(null);
 
       await request(app.getHttpServer()).get(`/beers/${BEER_ID}`).expect(404);
+      expect(beerRepo.findOne).toHaveBeenCalled();
     });
 
     it('returns 404 for a malformed (non-UUID) id', async () => {
@@ -121,9 +117,8 @@ describe('BeersController (integration, mocked DB)', () => {
   });
 
   describe('POST /beers', () => {
-    it('creates a new beer and resolves brewery + style', async () => {
+    it('creates a new beer with a style and resolves the brewery', async () => {
       breweryRepo.findOne.mockResolvedValue(fakeBrewery);
-      styleRepo.findOne.mockResolvedValue(fakeStyle);
       beerRepo.create.mockImplementation((data: Partial<Beer>) => ({ ...data }));
       beerRepo.save.mockImplementation((beer: Beer) =>
         Promise.resolve({ ...beer, id: BEER_ID, ratingCount: 0, avgRating: '0.00' }),
@@ -135,13 +130,12 @@ describe('BeersController (integration, mocked DB)', () => {
           name: 'Neues Pils',
           description: 'Frisch gebraut.',
           abv: 5.1,
+          style: 'Pils',
           breweryId: BREWERY_ID,
-          styleId: STYLE_ID,
         })
         .expect(201);
 
       expect(breweryRepo.findOne).toHaveBeenCalledWith({ where: { id: BREWERY_ID } });
-      expect(styleRepo.findOne).toHaveBeenCalledWith({ where: { id: STYLE_ID } });
       expect(res.body).toMatchObject({
         id: BEER_ID,
         name: 'Neues Pils',
@@ -165,6 +159,7 @@ describe('BeersController (integration, mocked DB)', () => {
         .post('/beers')
         .send({ name: 'Waise', breweryId: BREWERY_ID })
         .expect(404);
+      expect(beerRepo.save).not.toHaveBeenCalled();
     });
   });
 

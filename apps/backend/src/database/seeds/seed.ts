@@ -69,6 +69,7 @@ const OFF_FIELDS = [
   'brands',
   'countries',
   'countries_tags',
+  'categories_tags',
   'alcohol_100g',
   'image_front_url',
 ].join(',');
@@ -79,6 +80,7 @@ interface OpenFoodFactsProduct {
   brands?: string;
   countries?: string;
   countries_tags?: string[];
+  categories_tags?: string[];
   alcohol_100g?: number;
   image_front_url?: string;
 }
@@ -93,6 +95,7 @@ interface SeedBeer {
   name: string;
   brand?: string;
   country?: string;
+  style?: string;
   alcohol?: number;
   imageUrl?: string;
 }
@@ -164,6 +167,22 @@ function formatTag(tag?: string): string | undefined {
     .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
+}
+
+// Picks the most specific meaningful beer style from OFF category tags,
+// skipping generic ancestors like "beverages" or "beers".
+const GENERIC_CATEGORY_TAGS = new Set([
+  'en:beverages',
+  'en:alcoholic-beverages',
+  'en:beers',
+  'en:beers-and-beers-mixed-drinks',
+]);
+function deriveStyle(categoriesTags?: string[]): string | undefined {
+  if (!categoriesTags?.length) return undefined;
+  const specific = [...categoriesTags]
+    .reverse()
+    .find((tag) => tag.startsWith('en:') && !GENERIC_CATEGORY_TAGS.has(tag));
+  return formatTag(specific);
 }
 
 // Stable key for de-duplicating brands that differ only in case/whitespace/punctuation.
@@ -240,6 +259,7 @@ function addProduct(product: OpenFoodFactsProduct, byCode: Map<string, SeedBeer>
     name,
     brand: firstValue(product.brands),
     country: firstValue(product.countries) ?? formatTag(product.countries_tags?.[0]),
+    style: deriveStyle(product.categories_tags),
     alcohol: typeof product.alcohol_100g === 'number' ? product.alcohol_100g : undefined,
     imageUrl: product.image_front_url?.trim() || undefined,
   });
@@ -386,6 +406,7 @@ export async function seed() {
       externalId: beer.code,
       name: beer.name,
       abv: beer.alcohol,
+      style: beer.style,
       description: beer.brand ? `${beer.name} von ${beer.brand}.` : beer.name,
       imageUrl: beer.imageUrl ?? PLACEHOLDER_IMAGE_URL,
       brewery: findBrewery(beer.brand),
@@ -401,7 +422,6 @@ export async function seed() {
         name: r.name,
         abv: num(r.abv),
         ibu: numNonZero(r.ibu),
-        srm: numNonZero(r.srm),
         description: str(r.descript),
         imageUrl: PLACEHOLDER_IMAGE_URL,
         brewery: findBrewery(obdbBreweryById.get(Number(r.brewery_id))?.name),

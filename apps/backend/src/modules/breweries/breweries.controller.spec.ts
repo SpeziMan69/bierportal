@@ -18,7 +18,6 @@ const fakeBrewery = {
   website: 'https://example.com',
   description: 'Eine Test-Brauerei.',
   logoUrl: '/uploads/breweries/test.png',
-  isVerified: false,
 };
 
 describe('BreweriesController (integration, mocked DB)', () => {
@@ -60,7 +59,7 @@ describe('BreweriesController (integration, mocked DB)', () => {
     it('creates a new brewery', async () => {
       breweryRepo.create.mockImplementation((data: Partial<Brewery>) => ({ ...data }));
       breweryRepo.save.mockImplementation((brewery: Brewery) =>
-        Promise.resolve({ ...brewery, id: BREWERY_ID, isVerified: false }),
+        Promise.resolve({ ...brewery, id: BREWERY_ID }),
       );
 
       const res = await request(app.getHttpServer())
@@ -92,6 +91,7 @@ describe('BreweriesController (integration, mocked DB)', () => {
         .post('/breweries')
         .send({ name: 'Kaputt', website: 'not-a-url' })
         .expect(400);
+      expect(breweryRepo.save).not.toHaveBeenCalled();
     });
   });
 
@@ -115,6 +115,7 @@ describe('BreweriesController (integration, mocked DB)', () => {
         .patch(`/breweries/${BREWERY_ID}`)
         .send({ city: 'Hamburg' })
         .expect(404);
+      expect(breweryRepo.save).not.toHaveBeenCalled();
     });
 
     it('returns 404 for a malformed (non-UUID) id', async () => {

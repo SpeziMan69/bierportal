@@ -39,9 +39,6 @@ export class Brewery {
   @Column({ nullable: true })
   logoUrl!: string;
 
-  @Column({ default: false })
-  isVerified!: boolean;
-
   @CreateDateColumn()
   createdAt!: Date;
 

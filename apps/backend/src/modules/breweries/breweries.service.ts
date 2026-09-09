@@ -1,6 +1,11 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Brewery } from '../../common/entities/brewery.entity';
@@ -48,7 +53,17 @@ export class BreweriesService {
       throw new NotFoundException(`Die Brauerei mit der ID ${normalizedId} wurde nicht gefunden.`);
     }
 
-    await this.breweryRepository.remove(brewery);
+    try {
+      await this.breweryRepository.remove(brewery);
+    } catch (error) {
+      // Postgres foreign-key violation: beers still reference this brewery.
+      if (error instanceof QueryFailedError && (error.driverError as { code?: string }).code === '23503') {
+        throw new ConflictException(
+          'Die Brauerei kann nicht gelöscht werden, solange ihr noch Biere zugeordnet sind.',
+        );
+      }
+      throw error;
+    }
   }
 
   async updateLogo(id: string, file?: Express.Multer.File) {
