@@ -16,8 +16,7 @@ import { JwtAuthGuard } from './guards/jwt.authguard';
 import { GoogleAuthGuard } from './guards/google.authguard';
 import { AuthService } from './auth.service';
 import { User } from '../users/user.entity';
-import { RegisterDto } from './dto/register.dto';
-import { LoginDto } from './dto/login.dto';
+import { RegisterDto, LoginDto } from '@bierportal/dtos';
 import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('auth')

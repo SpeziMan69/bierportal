@@ -4,7 +4,7 @@ import { Not, Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Review } from '../../common/entities/review.entity';
 import { ReviewLike } from '../../common/entities/review-like.entity';
-import { UpdateMeDto } from './dto/update-me.dto';
+import { UpdateMeDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

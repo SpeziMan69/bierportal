@@ -20,8 +20,7 @@ import { Throttle } from '@nestjs/throttler';
 import { BreweriesService } from './breweries.service';
 import { imageUploadOptions } from '../../common/upload/image-upload.options';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
-import { CreateBreweryDto } from './dto/create-brewery.dto';
-import { UpdateBreweryDto } from './dto/update-brewery.dto';
+import { CreateBreweryDto, UpdateBreweryDto } from '@bierportal/dtos';
 
 @ApiTags('breweries')
 @Controller('breweries')

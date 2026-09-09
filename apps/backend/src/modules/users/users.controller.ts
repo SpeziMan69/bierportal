@@ -4,7 +4,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { UsersService } from './users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
-import { UpdateMeDto } from './dto/update-me.dto';
+import { UpdateMeDto } from '@bierportal/dtos';
 
 type AuthedRequest = Request & { user: { id: string } };
 

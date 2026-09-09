@@ -22,11 +22,11 @@
     "lint:fix": "nx lint frontend --fix && nx lint backend --fix",
     "test": "nx test backend && nx test frontend",
     "build": "nx build backend && nx build frontend",
-    "typeorm": "ts-node --transpile-only --project apps/backend/tsconfig.app.json node_modules/typeorm/cli.js",
+    "typeorm": "ts-node -r tsconfig-paths/register --transpile-only --project apps/backend/tsconfig.app.json node_modules/typeorm/cli.js",
     "migration:generate": "npm run typeorm -- migration:generate -d apps/backend/src/database/data-source.ts",
     "migration:run": "npm run typeorm -- migration:run -d apps/backend/src/database/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d apps/backend/src/database/data-source.ts",
-    "backend:seed": "ts-node --transpile-only --project apps/backend/tsconfig.app.json apps/backend/src/database/seeds/seed.ts"
+    "backend:seed": "ts-node -r tsconfig-paths/register --transpile-only --project apps/backend/tsconfig.app.json apps/backend/src/database/seeds/seed.ts"
   },
   "dependencies": {
     "@angular/common": "^21.2.9",

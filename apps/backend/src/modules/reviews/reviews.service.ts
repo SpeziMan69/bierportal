@@ -10,8 +10,7 @@ import { Review } from '../../common/entities/review.entity';
 import { ReviewLike } from '../../common/entities/review-like.entity';
 import { Beer } from '../../common/entities/beer.entity';
 import { User } from '../users/user.entity';
-import { CreateReviewDto } from './dto/create-review.dto';
-import { UpdateReviewDto } from './dto/update-review.dto';
+import { CreateReviewDto, UpdateReviewDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

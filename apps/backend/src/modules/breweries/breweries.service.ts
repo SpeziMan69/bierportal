@@ -10,8 +10,7 @@ import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Brewery } from '../../common/entities/brewery.entity';
 import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
-import { CreateBreweryDto } from './dto/create-brewery.dto';
-import { UpdateBreweryDto } from './dto/update-brewery.dto';
+import { CreateBreweryDto, UpdateBreweryDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

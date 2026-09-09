@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { BeerStatus } from '../../../common/entities/user-entry.entity';
+import { BeerStatus } from './beer-status.enum';
 
 export class UpdateUserBeerDto {
   @IsOptional()

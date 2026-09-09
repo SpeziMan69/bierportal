@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
-import { BeerStatus } from '../../../common/entities/user-entry.entity';
+import { BeerStatus } from './beer-status.enum';
 
 export class CreateUserBeerDto {
   @IsUUID()

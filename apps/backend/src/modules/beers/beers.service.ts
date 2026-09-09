@@ -6,8 +6,7 @@ import { join } from 'node:path';
 import { Beer } from '../../common/entities/beer.entity';
 import { Brewery } from '../../common/entities/brewery.entity';
 import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
-import { CreateBeerDto } from './dto/create-beer.dto';
-import { UpdateBeerDto } from './dto/update-beer.dto';
+import { CreateBeerDto, UpdateBeerDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

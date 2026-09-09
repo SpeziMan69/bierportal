@@ -4,8 +4,7 @@ import { Repository } from 'typeorm';
 import { BeerStatus, UserBeerEntry } from '../../common/entities/user-entry.entity';
 import { Beer } from '../../common/entities/beer.entity';
 import { User } from '../users/user.entity';
-import { CreateUserBeerDto } from './dto/create-user-beer.dto';
-import { UpdateUserBeerDto } from './dto/update-user-beer.dto';
+import { CreateUserBeerDto, UpdateUserBeerDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

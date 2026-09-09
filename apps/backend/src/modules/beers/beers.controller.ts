@@ -20,8 +20,7 @@ import { Throttle } from '@nestjs/throttler';
 import { BeersService } from './beers.service';
 import { imageUploadOptions } from '../../common/upload/image-upload.options';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
-import { CreateBeerDto } from './dto/create-beer.dto';
-import { UpdateBeerDto } from './dto/update-beer.dto';
+import { CreateBeerDto, UpdateBeerDto } from '@bierportal/dtos';
 
 @ApiTags('beers')
 @Controller('beers')

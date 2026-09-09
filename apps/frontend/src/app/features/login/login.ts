@@ -20,7 +20,10 @@ export class Login {
   submit(): void {
     this.error.set(null);
     this.auth.login(this.identifier, this.password).subscribe({
-      next: (res) => this.auth.user.set(res),
+      next: (res) => {
+        this.auth.user.set(res);
+        void this.router.navigate(['/']);
+      },
       error: () => this.error.set('Login failed. Please try again.'),
     });
   }
