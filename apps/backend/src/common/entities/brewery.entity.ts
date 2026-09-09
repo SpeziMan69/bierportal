@@ -39,6 +39,10 @@ export class Brewery {
   @Column({ nullable: true })
   logoUrl!: string;
 
+  // Soft-delete flag: inactive breweries are hidden from listings but keep their beers.
+  @Column({ default: true })
+  isActive!: boolean;
+
   @CreateDateColumn()
   createdAt!: Date;
 

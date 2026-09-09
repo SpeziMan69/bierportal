@@ -157,7 +157,7 @@ Reviews the user has liked, newest first.
 ## Beers (`/beers`)
 
 ### `GET /beers`
-Paginated list of active beers (ordered by name).
+Paginated, filterable list of active beers.
 
 - **Auth**: none
 - **Query**:
@@ -165,6 +165,10 @@ Paginated list of active beers (ordered by name).
   |-------|------|---------|-------|
   | `page` | int | 1 | min 1 |
   | `limit` | int | 24 | clamped to 1–100 |
+  | `q` | string | – | case-insensitive search over beer name **or** brewery name |
+  | `style` | string | – | case-insensitive partial match on style |
+  | `country` | string | – | case-insensitive partial match on brewery country |
+  | `sort` | enum | `name-asc` | one of `name-asc`, `rating-desc`, `alcohol-asc`, `alcohol-desc` (ABV sorts put nulls last) |
 - **Returns** `200`: `{ "items": BeerResponse[], "page", "limit", "total", "totalPages" }`
 
 `BeerResponse`:
@@ -240,14 +244,17 @@ Upload/replace a beer image.
 ## Breweries (`/breweries`)
 
 ### `GET /breweries`
-Paginated list of breweries (ordered by name).
+Paginated, filterable list of breweries (ordered by name).
 
 - **Auth**: none
 - **Query**:
-  | Param | Type | Default |
-  |-------|------|---------|
-  | `page` | int | 1 |
-  | `limit` | int | 24 |
+  | Param | Type | Default | Notes |
+  |-------|------|---------|-------|
+  | `page` | int | 1 | |
+  | `limit` | int | 24 | clamped to 1–100 |
+  | `q` | string | – | case-insensitive search over brewery name **or** city |
+  | `city` | string | – | case-insensitive partial match on city |
+  | `country` | string | – | case-insensitive partial match on country |
 - **Returns** `200`: `{ "items": Brewery[], "total", "page", "limit", "totalPages" }`
 
 `Brewery`:

@@ -17,7 +17,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { BeersService } from './beers.service';
+import { BeersService, type BeerSort } from './beers.service';
 import { imageUploadOptions } from '../../common/upload/image-upload.options';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
 import { CreateBeerDto, UpdateBeerDto } from '@bierportal/dtos';
@@ -28,15 +28,20 @@ export class BeersController {
   constructor(private readonly beersService: BeersService) {}
 
   @ApiOperation({
-    summary: 'List beers (paginated)',
-    description: 'Returns a paginated list of active beers. Use `page` and `limit` query params.',
+    summary: 'List beers (paginated, filterable)',
+    description:
+      'Returns a paginated list of active beers. Supports `page`, `limit`, `q` (name/brewery search), `style`, `country` and `sort` query params.',
   })
   @Get()
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(24), ParseIntPipe) limit: number,
+    @Query('q') q?: string,
+    @Query('style') style?: string,
+    @Query('country') country?: string,
+    @Query('sort') sort?: BeerSort,
   ) {
-    return this.beersService.findAll(page, limit);
+    return this.beersService.findAll({ page, limit, q, style, country, sort });
   }
   @ApiOperation({
     summary: 'Get a single beer by id',

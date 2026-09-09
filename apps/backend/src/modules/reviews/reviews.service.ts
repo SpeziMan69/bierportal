@@ -14,6 +14,12 @@ import { CreateReviewDto, UpdateReviewDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+export interface ReviewListOptions {
+  page?: number;
+  limit?: number;
+  userId?: string;
+}
+
 @Injectable()
 export class ReviewsService {
   constructor(
@@ -48,21 +54,38 @@ export class ReviewsService {
     return this.toResponse(saved.id);
   }
 
-  async findByBeer(beerId: string) {
+  async findByBeer(beerId: string, options: ReviewListOptions = {}) {
     const beer = await this.getBeerOrThrow(beerId);
+    const safePage = Math.max(1, options.page ?? 1);
+    const safeLimit = Math.min(Math.max(1, options.limit ?? 20), 100);
 
-    const reviews = await this.reviewRepo
+    const [reviews, total] = await this.reviewRepo
       .createQueryBuilder('review')
       .leftJoinAndSelect('review.user', 'user')
       .loadRelationCountAndMap('review.likeCount', 'review.likes')
       .where('review.beerId = :beerId', { beerId: beer.id })
       .andWhere('review.isDraft = false')
       .orderBy('review.createdAt', 'DESC')
-      .getMany();
+      .skip((safePage - 1) * safeLimit)
+      .take(safeLimit)
+      .getManyAndCount();
 
-    return reviews.map((review) =>
-      this.mapReview(review, (review as Review & { likeCount: number }).likeCount ?? 0),
+    const likedIds = await this.getLikedReviewIds(
+      options.userId,
+      reviews.map((review) => review.id),
     );
+
+    return {
+      items: reviews.map((review) =>
+        this.mapReview(review, (review as Review & { likeCount: number }).likeCount ?? 0, {
+          likedByMe: likedIds.has(review.id),
+        }),
+      ),
+      page: safePage,
+      limit: safeLimit,
+      total,
+      totalPages: Math.ceil(total / safeLimit),
+    };
   }
 
   async update(userId: string, id: string, dto: UpdateReviewDto) {
@@ -171,6 +194,23 @@ export class ReviewsService {
     return this.likeRepo.count({ where: { review: { id: reviewId } } });
   }
 
+  // Returns the subset of the given review ids that the user has liked.
+  private async getLikedReviewIds(
+    userId: string | undefined,
+    reviewIds: string[],
+  ): Promise<Set<string>> {
+    if (!userId || reviewIds.length === 0) {
+      return new Set();
+    }
+    const likes = await this.likeRepo
+      .createQueryBuilder('like')
+      .select('like.reviewId', 'reviewId')
+      .where('like.userId = :userId', { userId })
+      .andWhere('like.reviewId IN (:...reviewIds)', { reviewIds })
+      .getRawMany<{ reviewId: string }>();
+    return new Set(likes.map((like) => like.reviewId));
+  }
+
   private normalizeId(id: string): string {
     const normalizedId = id.trim();
     if (!UUID_REGEX.test(normalizedId)) {
@@ -179,7 +219,7 @@ export class ReviewsService {
     return normalizedId;
   }
 
-  private mapReview(review: Review, likeCount: number) {
+  private mapReview(review: Review, likeCount: number, extra?: { likedByMe: boolean }) {
     return {
       id: review.id,
       rating: Number(review.rating),
@@ -188,6 +228,7 @@ export class ReviewsService {
       createdAt: review.createdAt,
       updatedAt: review.updatedAt,
       likeCount,
+      likedByMe: extra?.likedByMe ?? false,
       user: review.user
         ? { id: review.user.id, username: review.user.username, picture: review.user.picture }
         : null,

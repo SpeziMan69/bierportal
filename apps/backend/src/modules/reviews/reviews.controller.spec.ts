@@ -9,6 +9,7 @@ import { Review } from '../../common/entities/review.entity';
 import { ReviewLike } from '../../common/entities/review-like.entity';
 import { Beer } from '../../common/entities/beer.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt.authguard';
 
 const USER_ID = 'a1b2c3d4-e5f6-4a1b-8c2d-3e4f5a6b7c8d';
 const OTHER_USER_ID = 'f9e8d7c6-b5a4-4321-8fed-0a1b2c3d4e5f';
@@ -36,7 +37,11 @@ function createQbMock() {
     where: jest.fn().mockReturnThis(),
     andWhere: jest.fn().mockReturnThis(),
     orderBy: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
     getMany: jest.fn(),
+    getManyAndCount: jest.fn(),
+    getRawMany: jest.fn().mockResolvedValue([]),
     getRawOne: jest.fn(),
   };
 }
@@ -84,6 +89,8 @@ describe('ReviewsController (integration, mocked DB)', () => {
           return true;
         },
       })
+      .overrideGuard(OptionalJwtAuthGuard)
+      .useValue({ canActivate: () => true })
       .compile();
 
     app = moduleFixture.createNestApplication();
@@ -100,13 +107,19 @@ describe('ReviewsController (integration, mocked DB)', () => {
   describe('GET /reviews/beer/:beerId', () => {
     it('returns published reviews with like counts', async () => {
       beerRepo.findOne.mockResolvedValue(fakeBeer);
-      qb.getMany.mockResolvedValue([{ ...fakeReview, likeCount: 3 }]);
+      qb.getManyAndCount.mockResolvedValue([[{ ...fakeReview, likeCount: 3 }], 1]);
 
       const res = await request(app.getHttpServer()).get(`/reviews/beer/${BEER_ID}`).expect(200);
 
-      expect(res.body).toEqual([
-        expect.objectContaining({ id: REVIEW_ID, rating: 4.5, likeCount: 3 }),
-      ]);
+      expect(res.body).toEqual(
+        expect.objectContaining({
+          items: [expect.objectContaining({ id: REVIEW_ID, rating: 4.5, likeCount: 3 })],
+          total: 1,
+          page: 1,
+          limit: 20,
+          totalPages: 1,
+        }),
+      );
     });
   });
 

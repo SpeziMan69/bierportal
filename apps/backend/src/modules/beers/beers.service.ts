@@ -22,6 +22,17 @@ export interface BeerResponse {
   description: string;
 }
 
+export type BeerSort = 'name-asc' | 'rating-desc' | 'alcohol-asc' | 'alcohol-desc';
+
+export interface BeerSearchOptions {
+  page?: number;
+  limit?: number;
+  q?: string;
+  style?: string;
+  country?: string;
+  sort?: BeerSort;
+}
+
 @Injectable()
 export class BeersService {
   constructor(
@@ -102,17 +113,42 @@ export class BeersService {
     return brewery;
   }
 
-  async findAll(page = 1, limit = 24) {
-    const safePage = Math.max(1, page);
-    const safeLimit = Math.min(Math.max(1, limit), 100);
+  async findAll(options: BeerSearchOptions = {}) {
+    const safePage = Math.max(1, options.page ?? 1);
+    const safeLimit = Math.min(Math.max(1, options.limit ?? 24), 100);
 
-    const [beers, total] = await this.beerRepository.findAndCount({
-      where: { isActive: true },
-      relations: ['brewery'],
-      order: { name: 'ASC' },
-      skip: (safePage - 1) * safeLimit,
-      take: safeLimit,
-    });
+    const qb = this.beerRepository
+      .createQueryBuilder('beer')
+      .leftJoinAndSelect('beer.brewery', 'brewery')
+      .where('beer.isActive = :active', { active: true });
+
+    if (options.q?.trim()) {
+      qb.andWhere('(beer.name ILIKE :q OR brewery.name ILIKE :q)', { q: `%${options.q.trim()}%` });
+    }
+    if (options.style?.trim()) {
+      qb.andWhere('beer.style ILIKE :style', { style: `%${options.style.trim()}%` });
+    }
+    if (options.country?.trim()) {
+      qb.andWhere('brewery.country ILIKE :country', { country: `%${options.country.trim()}%` });
+    }
+
+    switch (options.sort) {
+      case 'rating-desc':
+        qb.orderBy('beer.avgRating', 'DESC');
+        break;
+      case 'alcohol-asc':
+        qb.orderBy('beer.abv', 'ASC', 'NULLS LAST');
+        break;
+      case 'alcohol-desc':
+        qb.orderBy('beer.abv', 'DESC', 'NULLS LAST');
+        break;
+      default:
+        qb.orderBy('beer.name', 'ASC');
+    }
+
+    qb.skip((safePage - 1) * safeLimit).take(safeLimit);
+
+    const [beers, total] = await qb.getManyAndCount();
 
     return {
       items: beers.map((beer) => this.mapBeerToResponse(beer)),

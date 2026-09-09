@@ -1,12 +1,15 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -15,9 +18,11 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt.authguard';
 import { CreateReviewDto, UpdateReviewDto } from '@bierportal/dtos';
 
 type AuthedRequest = Request & { user: { id: string } };
+type MaybeAuthedRequest = Request & { user?: { id: string } };
 
 @ApiTags('reviews')
 @Controller('reviews')
@@ -26,11 +31,18 @@ export class ReviewsController {
 
   @ApiOperation({
     summary: 'List reviews for a beer',
-    description: 'Returns all published reviews for a beer (newest first) with like counts.',
+    description:
+      'Returns a paginated list of published reviews for a beer (newest first) with like counts. When authenticated, each review includes a `likedByMe` flag.',
   })
+  @UseGuards(OptionalJwtAuthGuard)
   @Get('beer/:beerId')
-  findByBeer(@Param('beerId') beerId: string) {
-    return this.reviewsService.findByBeer(beerId);
+  findByBeer(
+    @Req() req: MaybeAuthedRequest,
+    @Param('beerId') beerId: string,
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query('limit', new DefaultValuePipe(20), ParseIntPipe) limit: number,
+  ) {
+    return this.reviewsService.findByBeer(beerId, { page, limit, userId: req.user?.id });
   }
 
   @ApiOperation({

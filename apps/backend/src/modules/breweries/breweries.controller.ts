@@ -28,15 +28,19 @@ export class BreweriesController {
   constructor(private readonly breweriesService: BreweriesService) {}
 
   @ApiOperation({
-    summary: 'List breweries (paginated)',
-    description: 'Returns a paginated list of breweries. Use `page` and `limit` query params.',
+    summary: 'List breweries (paginated, filterable)',
+    description:
+      'Returns a paginated list of breweries. Supports `page`, `limit`, `q` (name/city search), `city` and `country` query params.',
   })
   @Get()
   findAll(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query('limit', new DefaultValuePipe(24), ParseIntPipe) limit: number,
+    @Query('q') q?: string,
+    @Query('city') city?: string,
+    @Query('country') country?: string,
   ) {
-    return this.breweriesService.findAll(page, limit);
+    return this.breweriesService.findAll({ page, limit, q, city, country });
   }
 
   @ApiOperation({

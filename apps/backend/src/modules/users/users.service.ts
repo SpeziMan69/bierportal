@@ -1,9 +1,17 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
+import { unlink } from 'node:fs/promises';
+import { join } from 'node:path';
 import { User } from './user.entity';
 import { Review } from '../../common/entities/review.entity';
 import { ReviewLike } from '../../common/entities/review-like.entity';
+import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
 import { UpdateMeDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -110,6 +118,30 @@ export class UsersService {
     }
 
     const saved = await this.userRepo.save(user);
+    return {
+      id: saved.id,
+      username: saved.username,
+      picture: saved.picture,
+      createdAt: saved.createdAt,
+    };
+  }
+
+  async updateAvatar(id: string, file?: Express.Multer.File) {
+    if (!file) {
+      throw new BadRequestException('No image file was uploaded.');
+    }
+
+    const user = await this.getUserOrThrow(id);
+    const previousPicture = user.picture;
+    user.picture = `/uploads/users/${file.filename}`;
+    const saved = await this.userRepo.save(user);
+
+    if (previousPicture?.startsWith('/uploads/users/')) {
+      await unlink(
+        join(UPLOAD_ROOT, 'users', previousPicture.replace('/uploads/users/', '')),
+      ).catch(() => undefined);
+    }
+
     return {
       id: saved.id,
       username: saved.username,

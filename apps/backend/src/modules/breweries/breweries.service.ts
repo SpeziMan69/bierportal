@@ -1,11 +1,6 @@
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryFailedError, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { Brewery } from '../../common/entities/brewery.entity';
@@ -13,6 +8,14 @@ import { UPLOAD_ROOT } from '../../common/upload/image-upload.options';
 import { CreateBreweryDto, UpdateBreweryDto } from '@bierportal/dtos';
 
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export interface BrewerySearchOptions {
+  page?: number;
+  limit?: number;
+  q?: string;
+  city?: string;
+  country?: string;
+}
 
 @Injectable()
 export class BreweriesService {
@@ -26,19 +29,38 @@ export class BreweriesService {
     return this.breweryRepository.save(brewery);
   }
 
-  async findAll(page = 1, limit = 24) {
-    const [items, total] = await this.breweryRepository.findAndCount({
-      order: { name: 'ASC' },
-      skip: (page - 1) * limit,
-      take: limit,
-    });
+  async findAll(options: BrewerySearchOptions = {}) {
+    const safePage = Math.max(1, options.page ?? 1);
+    const safeLimit = Math.min(Math.max(1, options.limit ?? 24), 100);
+
+    const qb = this.breweryRepository
+      .createQueryBuilder('brewery')
+      .where('brewery.isActive = :active', { active: true });
+
+    if (options.q?.trim()) {
+      qb.andWhere('(brewery.name ILIKE :q OR brewery.city ILIKE :q)', {
+        q: `%${options.q.trim()}%`,
+      });
+    }
+    if (options.city?.trim()) {
+      qb.andWhere('brewery.city ILIKE :city', { city: `%${options.city.trim()}%` });
+    }
+    if (options.country?.trim()) {
+      qb.andWhere('brewery.country ILIKE :country', { country: `%${options.country.trim()}%` });
+    }
+
+    qb.orderBy('brewery.name', 'ASC')
+      .skip((safePage - 1) * safeLimit)
+      .take(safeLimit);
+
+    const [items, total] = await qb.getManyAndCount();
 
     return {
       items,
       total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      page: safePage,
+      limit: safeLimit,
+      totalPages: Math.ceil(total / safeLimit),
     };
   }
 
@@ -48,7 +70,9 @@ export class BreweriesService {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
-    const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
+    const brewery = await this.breweryRepository.findOne({
+      where: { id: normalizedId, isActive: true },
+    });
     if (!brewery) {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
@@ -61,7 +85,9 @@ export class BreweriesService {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
-    const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
+    const brewery = await this.breweryRepository.findOne({
+      where: { id: normalizedId, isActive: true },
+    });
     if (!brewery) {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
@@ -76,22 +102,16 @@ export class BreweriesService {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
-    const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
+    const brewery = await this.breweryRepository.findOne({
+      where: { id: normalizedId, isActive: true },
+    });
     if (!brewery) {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
-    try {
-      await this.breweryRepository.remove(brewery);
-    } catch (error) {
-      // Postgres foreign-key violation: beers still reference this brewery.
-      if (error instanceof QueryFailedError && (error.driverError as { code?: string }).code === '23503') {
-        throw new ConflictException(
-          'The brewery cannot be deleted while beers are still assigned to it.',
-        );
-      }
-      throw error;
-    }
+    // Soft-delete: keep the row (and its beers) but hide it from listings.
+    brewery.isActive = false;
+    await this.breweryRepository.save(brewery);
   }
 
   async updateLogo(id: string, file?: Express.Multer.File) {
@@ -104,7 +124,9 @@ export class BreweriesService {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }
 
-    const brewery = await this.breweryRepository.findOne({ where: { id: normalizedId } });
+    const brewery = await this.breweryRepository.findOne({
+      where: { id: normalizedId, isActive: true },
+    });
     if (!brewery) {
       throw new NotFoundException(`The brewery with ID ${normalizedId} was not found.`);
     }

@@ -1,8 +1,21 @@
-import { Body, Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { Request } from 'express';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { UsersService } from './users.service';
+import { imageUploadOptions } from '../../common/upload/image-upload.options';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
 import { UpdateMeDto } from '@bierportal/dtos';
 
@@ -15,13 +28,25 @@ export class UsersController {
 
   @ApiOperation({
     summary: 'Update your own profile',
-    description: 'Updates the authenticated user\'s username and/or picture. Requires auth.',
+    description: "Updates the authenticated user's username and/or picture. Requires auth.",
   })
   @Throttle({ default: { limit: 20, ttl: 60000 } })
   @UseGuards(JwtAuthGuard)
   @Patch('me')
   updateMe(@Req() req: AuthedRequest, @Body() dto: UpdateMeDto) {
     return this.usersService.updateProfile(req.user.id, dto);
+  }
+
+  @ApiOperation({
+    summary: 'Upload your avatar',
+    description: "Uploads/replaces the authenticated user's profile picture. Requires auth.",
+  })
+  @Throttle({ default: { limit: 20, ttl: 60000 } })
+  @UseGuards(JwtAuthGuard)
+  @Post('me/avatar')
+  @UseInterceptors(FileInterceptor('avatar', imageUploadOptions('users')))
+  uploadAvatar(@Req() req: AuthedRequest, @UploadedFile() file: Express.Multer.File) {
+    return this.usersService.updateAvatar(req.user.id, file);
   }
 
   @ApiOperation({

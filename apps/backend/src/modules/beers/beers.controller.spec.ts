@@ -32,7 +32,17 @@ const fakeBeer = {
 describe('BeersController (integration, mocked DB)', () => {
   let app: INestApplication<App>;
 
+  const beerQueryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    orderBy: jest.fn().mockReturnThis(),
+    skip: jest.fn().mockReturnThis(),
+    take: jest.fn().mockReturnThis(),
+    getManyAndCount: jest.fn(),
+  };
   const beerRepo = {
+    createQueryBuilder: jest.fn(() => beerQueryBuilder),
     findAndCount: jest.fn(),
     findOne: jest.fn(),
     create: jest.fn(),
@@ -68,7 +78,7 @@ describe('BeersController (integration, mocked DB)', () => {
 
   describe('GET /beers', () => {
     it('returns a paginated list of beers', async () => {
-      beerRepo.findAndCount.mockResolvedValue([[fakeBeer], 1]);
+      beerQueryBuilder.getManyAndCount.mockResolvedValue([[fakeBeer], 1]);
 
       const res = await request(app.getHttpServer()).get('/beers?page=1&limit=24').expect(200);
 

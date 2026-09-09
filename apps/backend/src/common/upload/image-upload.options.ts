@@ -13,7 +13,7 @@ const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 // Uploads live outside dist so they survive rebuilds; created lazily on first upload.
 export const UPLOAD_ROOT = join(process.cwd(), 'apps', 'backend', 'uploads');
 
-export function imageUploadOptions(subfolder: 'beers' | 'breweries') {
+export function imageUploadOptions(subfolder: 'beers' | 'breweries' | 'users') {
   const destination = join(UPLOAD_ROOT, subfolder);
 
   return {

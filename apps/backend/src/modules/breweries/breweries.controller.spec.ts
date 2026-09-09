@@ -128,20 +128,22 @@ describe('BreweriesController (integration, mocked DB)', () => {
   });
 
   describe('DELETE /breweries/:id', () => {
-    it('deletes an existing brewery', async () => {
+    it('soft-deletes an existing brewery', async () => {
       breweryRepo.findOne.mockResolvedValue({ ...fakeBrewery });
-      breweryRepo.remove.mockResolvedValue({ ...fakeBrewery });
+      breweryRepo.save.mockImplementation((brewery: Brewery) => Promise.resolve(brewery));
 
       await request(app.getHttpServer()).delete(`/breweries/${BREWERY_ID}`).expect(204);
 
-      expect(breweryRepo.remove).toHaveBeenCalledWith(expect.objectContaining({ id: BREWERY_ID }));
+      expect(breweryRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({ id: BREWERY_ID, isActive: false }),
+      );
     });
 
     it('returns 404 for an unknown brewery', async () => {
       breweryRepo.findOne.mockResolvedValue(null);
 
       await request(app.getHttpServer()).delete(`/breweries/${BREWERY_ID}`).expect(404);
-      expect(breweryRepo.remove).not.toHaveBeenCalled();
+      expect(breweryRepo.save).not.toHaveBeenCalled();
     });
   });
 });
