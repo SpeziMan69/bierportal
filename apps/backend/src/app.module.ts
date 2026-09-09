@@ -11,6 +11,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { BeersModule } from './modules/beers/beers.module';
 import { BreweriesModule } from './modules/breweries/breweries.module';
+import { ReviewsModule } from './modules/reviews/reviews.module';
+import { UserBeersModule } from './modules/user-beers/user-beers.module';
 import { Beer } from './common/entities/beer.entity';
 import { BeerStyle } from './common/entities/beer-style.entity';
 import { Brewery } from './common/entities/brewery.entity';
@@ -53,6 +55,8 @@ import { UserBeerEntry } from './common/entities/user-entry.entity';
     AuthModule,
     BeersModule,
     BreweriesModule,
+    ReviewsModule,
+    UserBeersModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard }],
