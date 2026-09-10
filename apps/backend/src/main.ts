@@ -15,6 +15,10 @@ async function bootstrap() {
   app.use(cookieParser());
   app.useStaticAssets(join(process.cwd(), 'apps', 'backend', 'uploads'), {
     prefix: '/uploads',
+    // Uploaded images are loaded cross-origin by the frontend, so relax helmet's same-origin CORP for them.
+    setHeaders: (res) => {
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
   });
 
   const corsOrigin = process.env.CORS_ORIGIN?.split(',');
