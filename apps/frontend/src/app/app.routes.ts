@@ -8,6 +8,7 @@ import { usernameGuard } from './core/guards/username.guard';
 import { Home } from './pages/home/home';
 import { BeerList } from './pages/beer-list/beer-list';
 import { BeerDetail } from './pages/beer-detail/beer-detail';
+import { Profile } from './features/profile/profile';
 
 export const routes: Routes = [
   { path: '', component: Home },
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'login', component: Login, canActivate: [guestGuard] },
   { path: 'register', component: Register, canActivate: [guestGuard] },
   { path: 'choose-username', component: ChooseUsername, canActivate: [authGuard, usernameGuard] },
+  { path: 'profile', component: Profile, canActivate: [authGuard] },
   { path: '**', redirectTo: '' },
 ];

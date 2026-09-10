@@ -404,7 +404,7 @@ Remove your like from a review.
 
 ## User Beers (`/user-beers`)
 
-All endpoints require authentication (controller-level guard). Entries are per-user; you can only access/modify your own.
+All endpoints require authentication (controller-level guard). Entries are per-user; you can only access/modify your own. A beer may have one entry per status (e.g. both `cellar` and `tried` at once), each with its own note.
 
 `BeerStatus` enum: `tried` · `wishlist` · `cellar`.
 
@@ -417,7 +417,7 @@ List your beer entries, optionally filtered by status.
 - **Errors**: `404` unknown status value.
 
 ### `POST /user-beers`
-Add or update a beer entry (upsert — updates if it already exists for the beer).
+Add or update a beer entry (upsert per status — updates the note if an entry with the same beer **and** status already exists, otherwise creates a new one).
 
 - **Auth**: required
 - **Body**:

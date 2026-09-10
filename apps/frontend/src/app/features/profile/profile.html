@@ -1,0 +1,86 @@
+<section class="profile-page">
+  @if (loading()) {
+    <div class="state-card">
+      <h1>Profil wird geladen …</h1>
+      <p>Deine Daten werden abgerufen.</p>
+    </div>
+  } @else if (profile(); as user) {
+    <header class="profile-header">
+      <div class="avatar">
+        @if (user.picture) {
+          <img [src]="user.picture | mediaUrl" [alt]="user.username" />
+        } @else {
+          <span class="avatar-initial">{{ initial(user.username) }}</span>
+        }
+      </div>
+
+      <div class="profile-heading">
+        <h1>{{ user.username }}</h1>
+        <p class="member-since">Mitglied seit {{ user.createdAt | date: 'longDate' }}</p>
+        <div class="stats">
+          <span
+            ><strong>{{ user.reviewCount }}</strong> Bewertungen</span
+          >
+          <span
+            ><strong>{{ user.likeCount }}</strong> Likes</span
+          >
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button
+        type="button"
+        [class.active]="activeTab() === 'overview'"
+        (click)="setTab('overview')"
+      >
+        Übersicht
+      </button>
+      <button type="button" [class.active]="activeTab() === 'reviews'" (click)="setTab('reviews')">
+        Bewertungen
+      </button>
+      <button type="button" [class.active]="activeTab() === 'likes'" (click)="setTab('likes')">
+        Likes
+      </button>
+      <button type="button" [class.active]="activeTab() === 'beers'" (click)="setTab('beers')">
+        Meine Biere
+      </button>
+      <button
+        type="button"
+        class="danger-tab"
+        [class.active]="activeTab() === 'danger'"
+        (click)="setTab('danger')"
+      >
+        Konto löschen
+      </button>
+    </nav>
+
+    <div class="tab-content">
+      @switch (activeTab()) {
+        @case ('overview') {
+          <app-profile-overview [profile]="user" (updated)="onProfileUpdated($event)" />
+        }
+        @case ('reviews') {
+          <app-profile-reviews [userId]="user.id" />
+        }
+        @case ('likes') {
+          <app-profile-likes [userId]="user.id" />
+        }
+        @case ('beers') {
+          <app-profile-beers />
+        }
+        @case ('danger') {
+          <app-profile-danger />
+        }
+      }
+    </div>
+  } @else {
+    <div class="state-card">
+      <h1>Profil nicht verfügbar</h1>
+      <p>{{ error() }}</p>
+      <button type="button" class="btn btn-primary" (click)="loadProfile()">
+        Erneut versuchen
+      </button>
+    </div>
+  }
+</section>

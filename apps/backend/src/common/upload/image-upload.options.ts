@@ -10,7 +10,6 @@ type FileFilterCallback = (error: Error | null, acceptFile: boolean) => void;
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
 
-// Uploads live outside dist so they survive rebuilds; created lazily on first upload.
 export const UPLOAD_ROOT = join(process.cwd(), 'apps', 'backend', 'uploads');
 
 export function imageUploadOptions(subfolder: 'beers' | 'breweries' | 'users') {
@@ -33,7 +32,6 @@ export function imageUploadOptions(subfolder: 'beers' | 'breweries' | 'users') {
         file: Express.Multer.File,
         callback: (error: Error | null, filename: string) => void,
       ) => {
-        // Random name avoids path traversal / collisions from user-supplied filenames.
         callback(null, `${randomUUID()}${extname(file.originalname).toLowerCase()}`);
       },
     }),

@@ -13,7 +13,7 @@ import { Beer } from './beer.entity';
 export { BeerStatus };
 
 @Entity()
-@Unique(['user', 'beer'])
+@Unique(['user', 'beer', 'status'])
 export class UserBeerEntry {
   @PrimaryGeneratedColumn('uuid')
   id!: string;

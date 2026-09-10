@@ -21,12 +21,11 @@ export class UserBeersService {
     const beer = await this.getBeerOrThrow(dto.beerId);
 
     const existing = await this.entryRepo.findOne({
-      where: { user: { id: userId }, beer: { id: beer.id } },
+      where: { user: { id: userId }, beer: { id: beer.id }, status: dto.status },
       relations: ['beer', 'beer.brewery'],
     });
 
     if (existing) {
-      existing.status = dto.status;
       if (dto.note !== undefined) existing.note = dto.note;
       const saved = await this.entryRepo.save(existing);
       return this.mapEntry(saved);

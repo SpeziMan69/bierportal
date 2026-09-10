@@ -1,0 +1,32 @@
+<div class="danger">
+  <h2>Konto löschen</h2>
+  <p class="warning">
+    Dein Konto wird dauerhaft gelöscht. Alle deine Bewertungen, Likes und Biereinträge gehen
+    unwiderruflich verloren. Diese Aktion kann nicht rückgängig gemacht werden.
+  </p>
+
+  @if (error()) {
+    <p class="error-msg">{{ error() }}</p>
+  }
+
+  @if (!confirming()) {
+    <button type="button" class="btn btn-danger" (click)="startConfirm()">Konto löschen</button>
+  } @else {
+    <div class="confirm-box">
+      <p>Bist du sicher, dass du dein Konto endgültig löschen möchtest?</p>
+      <div class="confirm-actions">
+        <button type="button" class="btn btn-ghost" (click)="cancel()" [disabled]="deleting()">
+          Abbrechen
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="deleteAccount()"
+          [disabled]="deleting()"
+        >
+          {{ deleting() ? 'Wird gelöscht …' : 'Ja, endgültig löschen' }}
+        </button>
+      </div>
+    </div>
+  }
+</div>

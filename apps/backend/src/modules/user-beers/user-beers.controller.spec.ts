@@ -107,17 +107,33 @@ describe('UserBeersController (integration, mocked DB)', () => {
       expect(res.body).toMatchObject({ id: ENTRY_ID, status: 'wishlist' });
     });
 
-    it('updates the existing entry instead of duplicating it', async () => {
+    it('updates the note when an entry with the same status exists', async () => {
       beerRepo.findOne.mockResolvedValue(fakeBeer);
       entryRepo.findOne.mockResolvedValue({ ...fakeEntry, status: BeerStatus.WISHLIST });
       entryRepo.save.mockImplementation((entry: UserBeerEntry) => Promise.resolve(entry));
 
       const res = await request(app.getHttpServer())
         .post('/user-beers')
-        .send({ beerId: BEER_ID, status: 'tried' })
+        .send({ beerId: BEER_ID, status: 'wishlist', note: 'Neue Notiz' })
         .expect(201);
 
       expect(entryRepo.create).not.toHaveBeenCalled();
+      expect(res.body).toMatchObject({ id: ENTRY_ID, status: 'wishlist', note: 'Neue Notiz' });
+    });
+
+    it('creates a separate entry for a different status on the same beer', async () => {
+      beerRepo.findOne.mockResolvedValue(fakeBeer);
+      entryRepo.findOne.mockResolvedValue(null);
+      entryRepo.create.mockImplementation((data: Partial<UserBeerEntry>) => data);
+      entryRepo.save.mockResolvedValue({ id: ENTRY_ID });
+      entryRepo.findOneOrFail.mockResolvedValue({ ...fakeEntry, status: BeerStatus.TRIED });
+
+      const res = await request(app.getHttpServer())
+        .post('/user-beers')
+        .send({ beerId: BEER_ID, status: 'tried' })
+        .expect(201);
+
+      expect(entryRepo.create).toHaveBeenCalled();
       expect(res.body).toMatchObject({ id: ENTRY_ID, status: 'tried' });
     });
 

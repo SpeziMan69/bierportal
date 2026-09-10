@@ -1,0 +1,53 @@
+<form class="overview" (ngSubmit)="save()">
+  <h2>Profil bearbeiten</h2>
+  <p class="hint">Aktualisiere deinen Benutzernamen und dein Profilbild.</p>
+
+  <div class="preview">
+    <div class="preview-avatar">
+      @if (picture.trim()) {
+        <img
+          [src]="picture.trim() | mediaUrl"
+          alt="Vorschau"
+          (error)="$any($event.target).style.display = 'none'"
+        />
+      } @else {
+        <span>{{ (username || '?').charAt(0).toUpperCase() }}</span>
+      }
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="username">Benutzername</label>
+    <input
+      id="username"
+      class="form-input"
+      name="username"
+      type="text"
+      [(ngModel)]="username"
+      placeholder="Benutzername"
+    />
+  </div>
+
+  <div class="form-group">
+    <label class="form-label" for="picture">Profilbild-URL</label>
+    <input
+      id="picture"
+      class="form-input"
+      name="picture"
+      type="url"
+      [(ngModel)]="picture"
+      placeholder="https://…"
+    />
+  </div>
+
+  @if (error()) {
+    <p class="error-msg">{{ error() }}</p>
+  }
+  @if (success()) {
+    <p class="success-msg">Profil erfolgreich gespeichert.</p>
+  }
+
+  <button class="btn btn-primary" type="submit" [disabled]="saving()">
+    {{ saving() ? 'Wird gespeichert …' : 'Speichern' }}
+  </button>
+</form>

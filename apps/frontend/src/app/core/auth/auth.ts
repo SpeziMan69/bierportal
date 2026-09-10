@@ -39,6 +39,10 @@ export class Auth {
     return this.http.post(`${this.apiUrl}/logout`, {});
   }
 
+  deleteAccount(): Observable<unknown> {
+    return this.http.delete(`${this.apiUrl}/account`);
+  }
+
   loadProfile(): Observable<AuthUser | null> {
     return this.http.get<AuthUser>(`${this.apiUrl}/profile`).pipe(
       tap((user) => this.user.set(user)),

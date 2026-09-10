@@ -1,0 +1,75 @@
+.danger {
+  max-width: 560px;
+  border: 1px solid var(--error);
+  border-radius: 12px;
+  padding: 24px 28px;
+  background: rgba(220, 53, 69, 0.05);
+
+  h2 {
+    color: var(--error);
+    margin: 0 0 12px;
+  }
+}
+
+.warning {
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.error-msg {
+  color: var(--error);
+  margin: 0 0 16px;
+}
+
+.confirm-box {
+  p {
+    color: var(--text-primary);
+    font-weight: 600;
+    margin: 0 0 16px;
+  }
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: 500px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.1s, background 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.02);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-danger {
+  background: var(--error);
+  color: #fff;
+
+  &:hover:not(:disabled) {
+    background: #c82333;
+  }
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+
+  &:hover:not(:disabled) {
+    border-color: var(--text-primary);
+  }
+}
