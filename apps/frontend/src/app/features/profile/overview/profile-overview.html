@@ -29,19 +29,18 @@
   </div>
 
   <div class="form-group">
-    <label class="form-label" for="avatar">Profilbild hochladen</label>
-    <input
-      id="avatar"
-      class="form-input"
-      name="avatar"
-      type="file"
-      accept="image/png,image/jpeg,image/webp"
-      (change)="onAvatarSelected($event)"
-      [disabled]="uploading()"
-    />
-    @if (uploading()) {
-      <p class="hint">Bild wird hochgeladen …</p>
-    }
+    <span class="form-label">Profilbild ändern</span>
+    <label class="btn btn-secondary file-upload" [class.disabled]="uploading()">
+      {{ uploading() ? 'Wird hochgeladen …' : 'Bild hochladen' }}
+      <input
+        name="avatar"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        (change)="onAvatarSelected($event)"
+        [disabled]="uploading()"
+        hidden
+      />
+    </label>
   </div>
 
   @if (error()) {
