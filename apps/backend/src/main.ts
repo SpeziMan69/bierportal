@@ -38,10 +38,10 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const config = new DocumentBuilder()
-    .setTitle('My API')
+    .setTitle('Bierportal API')
     .setDescription('Final project API')
     .setVersion('1.0')
-    .addBearerAuth() // if you add JWT auth later
+    .addCookieAuth('token')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
