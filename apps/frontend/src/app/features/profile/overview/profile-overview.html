@@ -29,15 +29,19 @@
   </div>
 
   <div class="form-group">
-    <label class="form-label" for="picture">Profilbild-URL</label>
+    <label class="form-label" for="avatar">Profilbild hochladen</label>
     <input
-      id="picture"
+      id="avatar"
       class="form-input"
-      name="picture"
-      type="url"
-      [(ngModel)]="picture"
-      placeholder="https://…"
+      name="avatar"
+      type="file"
+      accept="image/png,image/jpeg,image/webp"
+      (change)="onAvatarSelected($event)"
+      [disabled]="uploading()"
     />
+    @if (uploading()) {
+      <p class="hint">Bild wird hochgeladen …</p>
+    }
   </div>
 
   @if (error()) {

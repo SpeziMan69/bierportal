@@ -4,6 +4,8 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 import { UserService } from '../../../services/user';
 import type { UpdatedProfile, UserProfile } from '../../../models/user';
 
+const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB, mirrors the backend upload limit
+
 @Component({
   selector: 'app-profile-overview',
   standalone: true,
@@ -20,6 +22,7 @@ export class ProfileOverview {
   protected username = '';
   protected picture = '';
   protected readonly saving = signal(false);
+  protected readonly uploading = signal(false);
   protected readonly error = signal<string | null>(null);
   protected readonly success = signal(false);
 
@@ -36,27 +39,60 @@ export class ProfileOverview {
     this.error.set(null);
     this.success.set(false);
 
-    const trimmedPicture = this.picture.trim();
-    this.userService
-      .updateMe({
-        username: this.username.trim(),
-        picture: trimmedPicture === '' ? undefined : trimmedPicture,
-      })
-      .subscribe({
-        next: (result) => {
-          this.saving.set(false);
-          this.success.set(true);
-          this.updated.emit(result);
-        },
-        error: (err: { error?: { message?: string | string[] } }) => {
-          this.saving.set(false);
-          const message = err?.error?.message;
-          this.error.set(
-            Array.isArray(message)
-              ? message.join(' ')
-              : (message ?? 'Dein Profil konnte nicht gespeichert werden.'),
-          );
-        },
-      });
+    this.userService.updateMe({ username: this.username.trim() }).subscribe({
+      next: (result) => {
+        this.saving.set(false);
+        this.success.set(true);
+        this.updated.emit(result);
+      },
+      error: (err: { error?: { message?: string | string[] } }) => {
+        this.saving.set(false);
+        const message = err?.error?.message;
+        this.error.set(
+          Array.isArray(message)
+            ? message.join(' ')
+            : (message ?? 'Dein Profil konnte nicht gespeichert werden.'),
+        );
+      },
+    });
+  }
+
+  protected onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    if (file.size > MAX_AVATAR_SIZE_BYTES) {
+      input.value = '';
+      this.error.set('Das Bild darf höchstens 5 MB groß sein.');
+      this.success.set(false);
+      return;
+    }
+
+    this.uploading.set(true);
+    this.error.set(null);
+    this.success.set(false);
+
+    this.userService.uploadAvatar(file).subscribe({
+      next: (result) => {
+        this.uploading.set(false);
+        this.success.set(true);
+        this.picture = result.picture ?? '';
+        this.updated.emit(result);
+        input.value = '';
+      },
+      error: (err: { error?: { message?: string | string[] } }) => {
+        this.uploading.set(false);
+        input.value = '';
+        const message = err?.error?.message;
+        this.error.set(
+          Array.isArray(message)
+            ? message.join(' ')
+            : (message ?? 'Der Upload ist fehlgeschlagen.'),
+        );
+      },
+    });
   }
 }
