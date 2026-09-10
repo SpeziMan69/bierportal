@@ -5,8 +5,6 @@ import { MediaUrlPipe } from '../../../shared/pipes/media-url.pipe';
 import { UserService } from '../../../services/user';
 import type { UserBeerEntry } from '../../../models/user';
 
-type StatusFilter = BeerStatus | 'all';
-
 @Component({
   selector: 'app-profile-beers',
   standalone: true,
@@ -18,15 +16,14 @@ export class ProfileBeers {
   private readonly userService = inject(UserService);
 
   protected readonly BeerStatus = BeerStatus;
-  protected readonly filter = signal<StatusFilter>('all');
+  protected readonly filter = signal<BeerStatus>(BeerStatus.WISHLIST);
   protected readonly entries = signal<UserBeerEntry[]>([]);
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
 
-  protected readonly filters: { value: StatusFilter; label: string }[] = [
-    { value: 'all', label: 'Alle' },
-    { value: BeerStatus.TRIED, label: 'Probiert' },
+  protected readonly filters: { value: BeerStatus; label: string }[] = [
     { value: BeerStatus.WISHLIST, label: 'Wunschliste' },
+    { value: BeerStatus.TRIED, label: 'Probiert' },
     { value: BeerStatus.CELLAR, label: 'Keller' },
   ];
 
@@ -34,7 +31,7 @@ export class ProfileBeers {
     this.load();
   }
 
-  protected setFilter(filter: StatusFilter): void {
+  protected setFilter(filter: BeerStatus): void {
     if (this.filter() === filter) {
       return;
     }
@@ -50,10 +47,7 @@ export class ProfileBeers {
     this.loading.set(true);
     this.error.set(null);
 
-    const active = this.filter();
-    const status = active === 'all' ? undefined : active;
-
-    this.userService.getMyBeers(status).subscribe({
+    this.userService.getMyBeers(this.filter()).subscribe({
       next: (entries) => {
         this.entries.set(entries);
         this.loading.set(false);
