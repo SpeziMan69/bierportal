@@ -4,12 +4,8 @@
 
   <div class="preview">
     <div class="preview-avatar">
-      @if (picture.trim()) {
-        <img
-          [src]="picture.trim() | mediaUrl"
-          alt="Vorschau"
-          (error)="$any($event.target).style.display = 'none'"
-        />
+      @if (picture().trim() && !imageError()) {
+        <img [src]="picture().trim() | mediaUrl" alt="Vorschau" (error)="imageError.set(true)" />
       } @else {
         <span>{{ (username || '?').charAt(0).toUpperCase() }}</span>
       }

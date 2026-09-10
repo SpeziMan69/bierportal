@@ -20,7 +20,8 @@ export class ProfileOverview {
   readonly updated = output<UpdatedProfile>();
 
   protected username = '';
-  protected picture = '';
+  protected readonly picture = signal('');
+  protected readonly imageError = signal(false);
   protected readonly saving = signal(false);
   protected readonly uploading = signal(false);
   protected readonly error = signal<string | null>(null);
@@ -30,7 +31,8 @@ export class ProfileOverview {
     effect(() => {
       const p = this.profile();
       this.username = p.username;
-      this.picture = p.picture ?? '';
+      this.picture.set(p.picture ?? '');
+      this.imageError.set(false);
     });
   }
 
@@ -79,7 +81,8 @@ export class ProfileOverview {
       next: (result) => {
         this.uploading.set(false);
         this.success.set(true);
-        this.picture = result.picture ?? '';
+        this.imageError.set(false);
+        this.picture.set(result.picture ?? '');
         this.updated.emit(result);
         input.value = '';
       },
