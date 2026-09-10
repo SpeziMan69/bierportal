@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import type { BeerStatus, UpdateMeDto } from '@bierportal/dtos';
+import type { BeerStatus, CreateUserBeerDto, UpdateMeDto } from '@bierportal/dtos';
 import { environment } from '../../environments/environment';
 import type {
   UpdatedProfile,
@@ -38,5 +38,15 @@ export class UserService {
       params = params.set('status', status);
     }
     return this.http.get<UserBeerEntry[]>(`${this.apiUrl}/user-beers`, { params });
+  }
+  
+  addBeer(dto: CreateUserBeerDto): Observable<UserBeerEntry> {
+    return this.http.post<UserBeerEntry>(`${this.apiUrl}/user-beers`, dto);
+  }
+
+  removeBeer(entryId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/user-beers/${encodeURIComponent(entryId)}`,
+    );
   }
 }

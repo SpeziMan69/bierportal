@@ -12,6 +12,9 @@
     }
   </div>
 
+  @if (removeError()) {
+  <p class="error-msg" role="alert">{{ removeError() }}</p>
+  }
   @if (loading()) {
     <p class="muted">Biere werden geladen …</p>
   } @else if (error()) {
@@ -49,6 +52,18 @@
           @if (entry.note) {
             <p class="beer-note">{{ entry.note }}</p>
           }
+          <button
+            type="button"
+            class="remove-button"
+            [disabled]="removingIds().includes(entry.id)"
+            [attr.aria-label]="
+              (entry.beer?.name ?? 'Bier') +
+              ' aus der Liste ' + statusLabel(entry.status) + ' entfernen'
+            "
+            (click)="removeEntry(entry.id)"
+          >
+            {{ removingIds().includes(entry.id) ? 'Wird entfernt …' : 'Entfernen' }}
+          </button>
         </article>
       }
     </div>

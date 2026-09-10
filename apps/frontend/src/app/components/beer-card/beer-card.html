@@ -31,3 +31,28 @@
     <span class="beer-card-link">Details ansehen <span aria-hidden="true">→</span></span>
   </div>
 </a>
+
+<div class="collection-buttons">
+  @for (button of collectionButtons; track button.status) {
+    <button
+      type="button"
+      [disabled]="
+        savingStatuses().includes(button.status) ||
+        savedStatuses().includes(button.status)
+      "
+      (click)="addToCollection(button.status)"
+    >
+      @if (savingStatuses().includes(button.status)) {
+        Wird gespeichert …
+      } @else if (savedStatuses().includes(button.status)) {
+        {{ button.savedLabel }}
+      } @else {
+        {{ button.label }}
+      }
+    </button>
+  }
+</div>
+
+@if (entryError()) {
+  <p role="alert">{{ entryError() }}</p>
+}
