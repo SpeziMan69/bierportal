@@ -1,0 +1,28 @@
+<div class="likes">
+  @if (loading()) {
+    <p class="muted">Likes werden geladen …</p>
+  } @else if (error()) {
+    <p class="error-msg">{{ error() }}</p>
+  } @else if (likes().length === 0) {
+    <p class="muted">Du hast noch keine Bewertungen geliked.</p>
+  } @else {
+    @for (like of likes(); track like.id) {
+      @if (like.review; as review) {
+        <article class="like-card">
+          <div class="like-head">
+            @if (review.beer; as beer) {
+              <a class="beer-name" [routerLink]="['/beers', beer.id]">{{ beer.name }}</a>
+            } @else {
+              <span class="beer-name">Unbekanntes Bier</span>
+            }
+            <span class="rating">⭐ {{ review.rating }}</span>
+          </div>
+          @if (review.text) {
+            <p class="review-text">{{ review.text }}</p>
+          }
+          <p class="like-date">Geliked am {{ like.createdAt | date: 'medium' }}</p>
+        </article>
+      }
+    }
+  }
+</div>

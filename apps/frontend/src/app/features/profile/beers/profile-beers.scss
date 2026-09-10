@@ -1,0 +1,133 @@
+.beers {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 500px;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &.active {
+    background: #1db954;
+    border-color: #1db954;
+    color: #000;
+  }
+}
+
+.muted {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.error-msg {
+  color: var(--error);
+  margin: 0;
+}
+
+.beer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.beer-item {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.beer-link {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  text-decoration: none;
+}
+
+.beer-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-secondary);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.beer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.beer-name {
+  color: var(--text-primary);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.beer-brewery {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.status-badge {
+  align-self: flex-start;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 500px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-tried {
+  background: rgba(29, 185, 84, 0.18);
+  color: #1db954;
+}
+
+.status-wishlist {
+  background: rgba(245, 193, 108, 0.18);
+  color: #f5c16c;
+}
+
+.status-cellar {
+  background: rgba(108, 158, 245, 0.18);
+  color: #6c9ef5;
+}
+
+.beer-note {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.4;
+}

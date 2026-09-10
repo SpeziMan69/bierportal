@@ -1,0 +1,56 @@
+<div class="beers">
+  <div class="filter-bar">
+    @for (option of filters; track option.value) {
+      <button
+        type="button"
+        class="filter-chip"
+        [class.active]="filter() === option.value"
+        (click)="setFilter(option.value)"
+      >
+        {{ option.label }}
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <p class="muted">Biere werden geladen …</p>
+  } @else if (error()) {
+    <p class="error-msg">{{ error() }}</p>
+  } @else if (entries().length === 0) {
+    <p class="muted">Keine Biere in dieser Liste.</p>
+  } @else {
+    <div class="beer-grid">
+      @for (entry of entries(); track entry.id) {
+        <article class="beer-item">
+          @if (entry.beer; as beer) {
+            <a class="beer-link" [routerLink]="['/beers', beer.id]">
+              <div class="beer-thumb">
+                <img
+                  [src]="beer.imageUrl | mediaUrl"
+                  [alt]="beer.name"
+                  (error)="$any($event.target).src = '/public/beer-placeholder.png'"
+                />
+              </div>
+              <div class="beer-info">
+                <span class="beer-name">{{ beer.name }}</span>
+                @if (beer.brewery) {
+                  <span class="beer-brewery">{{ beer.brewery }}</span>
+                }
+              </div>
+            </a>
+          } @else {
+            <div class="beer-info">
+              <span class="beer-name">Unbekanntes Bier</span>
+            </div>
+          }
+          <span class="status-badge status-{{ entry.status }}">
+            {{ statusLabel(entry.status) }}
+          </span>
+          @if (entry.note) {
+            <p class="beer-note">{{ entry.note }}</p>
+          }
+        </article>
+      }
+    </div>
+  }
+</div>
