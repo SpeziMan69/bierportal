@@ -1,6 +1,14 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
 .beer-card {
   display: block;
-  height: 100%;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
   padding: 24px;
   overflow: hidden;
   color: inherit;
@@ -47,4 +55,31 @@
   margin-top: 16px;
   color: #f5c16c;
   font-weight: 700;
+}
+
+.collection-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.collection-buttons button {
+  padding: 10px 14px;
+  border: 1px solid #f5c16c;
+  border-radius: 8px;
+  background: #181818;
+  color: #f5c16c;
+  font: inherit;
+  cursor: pointer;
+}
+
+.collection-buttons button:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.collection-buttons button:focus-visible {
+  outline: 2px solid #f5c16c;
+  outline-offset: 3px;
 }
