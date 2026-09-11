@@ -19,10 +19,6 @@ export class ThemeService {
     });
   }
 
-  toggle(): void {
-    this.theme.update((t) => (t === 'dark' ? 'light' : 'dark'));
-  }
-
   private loadInitialTheme(): Theme {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'light' || stored === 'dark') return stored;
