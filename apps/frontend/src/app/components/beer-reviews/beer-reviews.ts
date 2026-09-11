@@ -12,7 +12,7 @@ import { ReviewService, type BeerReview } from '../../services/review';
   selector: 'app-beer-reviews',
   imports: [DatePipe, FormsModule, RouterLink],
   templateUrl: './beer-reviews.html',
-  styleUrl: './beer-reviews.css',
+  styleUrl: './beer-reviews.scss',
 })
 export class BeerReviews implements OnChanges {
   @Input({ required: true }) beerId!: string;

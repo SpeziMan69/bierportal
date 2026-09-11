@@ -1,4 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+@reference './tailwind.scss';
+
 /* In @layer base so Tailwind utilities (in @layer utilities) still override it. */
 @layer base {
   *,
@@ -10,17 +12,7 @@
   }
 }
 
-:root[data-theme='light'] {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8fafc;
-  --bg-card: #ffffff;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --border: #e2e8f0;
-  --error: #ef4444;
-}
-
-:root[data-theme='dark'] {
+:root {
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;
   --bg-card: #1e293b;
@@ -38,9 +30,6 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease;
 }
 
 .btn {
@@ -59,4 +48,16 @@ body {
     opacity: 0.5;
     cursor: not-allowed;
   }
+}
+
+.panel-dark {
+  @apply rounded-2xl border border-neutral-700 bg-neutral-800;
+}
+
+.btn-cta {
+  @apply rounded-lg bg-blue-600 px-5 py-2.5 font-bold text-white hover:bg-blue-500;
+}
+
+.btn-secondary {
+  @apply rounded-lg border border-neutral-600 bg-neutral-900 px-3 py-2 text-neutral-200 hover:bg-neutral-700 disabled:opacity-50;
 }

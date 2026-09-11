@@ -8,7 +8,7 @@ import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
   selector: 'app-beer-detail',
   imports: [RouterLink, MediaUrlPipe],
   templateUrl: './beer-detail.html',
-  styleUrl: './beer-detail.css',
+  styleUrl: './beer-detail.scss',
 })
 export class BeerDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);

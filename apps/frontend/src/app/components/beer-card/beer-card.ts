@@ -10,7 +10,7 @@ import { BeerReviews } from '../beer-reviews/beer-reviews';
   selector: 'app-beer-card',
   imports: [RouterLink, MediaUrlPipe, BeerReviews],
   templateUrl: './beer-card.html',
-  styleUrl: './beer-card.css',
+  styleUrl: './beer-card.scss',
 })
 export class BeerCard {
   @Input({ required: true }) beer!: Beer;
