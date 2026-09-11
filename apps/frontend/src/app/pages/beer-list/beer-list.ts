@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BeerCard } from '../../components/beer-card/beer-card';
 import type { Beer } from '../../models/beer';
@@ -12,7 +12,7 @@ type BeerSort = 'name-asc' | 'rating-desc' | 'alcohol-asc' | 'alcohol-desc';
   templateUrl: './beer-list.html',
   styleUrl: './beer-list.css',
 })
-export class BeerList {
+export class BeerList implements OnInit {
   private readonly beerService = inject(BeerService);
 
   protected readonly beers = signal<Beer[]>([]);
@@ -30,7 +30,7 @@ export class BeerList {
 
   private readonly pageSize = 100;
 
-  constructor() {
+  ngOnInit(): void {
     this.loadInitialBeers();
   }
 
