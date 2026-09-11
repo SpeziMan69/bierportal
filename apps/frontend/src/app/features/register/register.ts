@@ -8,7 +8,6 @@ import { Auth } from '../../core/auth/auth';
   standalone: true,
   imports: [FormsModule, RouterLink],
   templateUrl: './register.html',
-  styleUrl: './register.scss',
 })
 export class Register {
   protected auth = inject(Auth);

@@ -1,42 +1,61 @@
-<div class="auth-page">
-  <div class="auth-card">
-    <h1 class="auth-title">Log in to WebEng</h1>
+<section class="flex min-h-screen items-center justify-center bg-neutral-900 px-4 py-16 text-white">
+  <div class="panel-dark w-full max-w-md p-8 sm:p-10">
+    <h1 class="mb-6 text-center text-3xl font-bold">Anmelden</h1>
 
-    <div class="form-group">
-      <label class="form-label">Email or username</label>
-      <input
-        class="form-input"
-        [(ngModel)]="identifier"
-        placeholder="Email or username"
-        type="text"
-      />
-    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-neutral-300" for="identifier"
+          >E-Mail oder Benutzername</label
+        >
+        <input
+          id="identifier"
+          name="identifier"
+          class="input-dark px-3"
+          [(ngModel)]="identifier"
+          placeholder="E-Mail oder Benutzername"
+          type="text"
+        />
+      </div>
 
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input class="form-input" [(ngModel)]="password" placeholder="Password" type="password" />
-    </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-neutral-300" for="password">Passwort</label>
+        <input
+          id="password"
+          name="password"
+          class="input-dark px-3"
+          [(ngModel)]="password"
+          placeholder="Passwort"
+          type="password"
+        />
+      </div>
 
-    @if (error()) {
-      <p class="error-msg">{{ error() }}</p>
-    }
+      @if (error()) {
+        <p class="text-error" role="alert">{{ error() }}</p>
+      }
 
-    <button class="btn btn-primary" (click)="submit()">Log In</button>
+      <button type="button" class="btn-cta w-full" (click)="submit()">Anmelden</button>
 
-    <div class="divider">
-      <span class="divider-line"></span>
-      <span class="divider-text">or</span>
-      <span class="divider-line"></span>
-    </div>
+      <div class="my-1 flex items-center gap-3">
+        <span class="h-px flex-1 bg-neutral-700"></span>
+        <span class="text-sm text-neutral-400">oder</span>
+        <span class="h-px flex-1 bg-neutral-700"></span>
+      </div>
 
-    <button class="btn btn-social" (click)="auth.loginOrRegisterWithGoogle()">
-      <img class="social-icon" src="public/google.ico" alt="Google" />
-      Continue with Google
-    </button>
+      <button
+        type="button"
+        class="btn-secondary flex w-full items-center justify-center gap-3 py-3"
+        (click)="auth.loginOrRegisterWithGoogle()"
+      >
+        <img class="h-5 w-5" src="public/google.ico" alt="Google" />
+        Mit Google anmelden
+      </button>
 
-    <div class="auth-footer">
-      <span class="footer-text">Don't have an account?</span>
-      <a class="footer-link" routerLink="/register">Sign up</a>
+      <div
+        class="mt-2 flex items-center justify-center gap-2 border-t border-neutral-800 pt-6 text-sm"
+      >
+        <span class="text-neutral-400">Noch kein Konto?</span>
+        <a class="font-bold text-blue-600 hover:underline" routerLink="/register">Registrieren</a>
+      </div>
     </div>
   </div>
-</div>
+</section>
