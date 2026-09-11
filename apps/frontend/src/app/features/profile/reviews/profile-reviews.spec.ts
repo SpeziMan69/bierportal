@@ -3,21 +3,21 @@ import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { BeerDetail } from './beer-detail';
+import { ProfileReviews } from './profile-reviews';
 
-describe('BeerDetail', () => {
-  let component: BeerDetail;
-  let fixture: ComponentFixture<BeerDetail>;
+describe('ProfileReviews', () => {
+  let component: ProfileReviews;
+  let fixture: ComponentFixture<ProfileReviews>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BeerDetail],
+      imports: [ProfileReviews],
       providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BeerDetail);
+    fixture = TestBed.createComponent(ProfileReviews);
+    fixture.componentRef.setInput('userId', 'user-1');
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {

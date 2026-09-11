@@ -39,7 +39,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          node-version: '20'
           cache: 'npm'
 
       - uses: actions/cache@v4
@@ -52,6 +52,9 @@ jobs:
 
       - name: Derive base/head SHAs for nx affected
         uses: nrwl/nx-set-shas@v4
+
+      - name: Clear Nx cache
+        run: npx nx reset
 
       - name: Lint
         run: npx nx affected -t lint --parallel=3

@@ -1,22 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { BeerList } from './beer-list';
+import { Profile } from './profile';
 
-describe('BeerList', () => {
-  let component: BeerList;
-  let fixture: ComponentFixture<BeerList>;
+describe('Profile', () => {
+  let component: Profile;
+  let fixture: ComponentFixture<Profile>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BeerList],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      imports: [Profile],
+      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting()],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BeerList);
+    fixture = TestBed.createComponent(Profile);
     component = fixture.componentInstance;
-    await fixture.whenStable();
   });
 
   it('should create', () => {

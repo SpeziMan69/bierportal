@@ -5,16 +5,21 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'node:path';
+import type { ServerResponse } from 'node:http';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { UPLOAD_ROOT } from './common/upload/image-upload.options';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.use(helmet());
   app.use(cookieParser());
-  app.useStaticAssets(join(process.cwd(), 'apps', 'backend', 'uploads'), {
+  app.useStaticAssets(UPLOAD_ROOT, {
     prefix: '/uploads',
+    // Uploaded images are loaded cross-origin by the frontend, so relax helmet's same-origin CORP for them.
+    setHeaders: (res: ServerResponse) => {
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    },
   });
 
   const corsOrigin = process.env.CORS_ORIGIN?.split(',');

@@ -32,6 +32,12 @@ export class UserService {
     return this.http.patch<UpdatedProfile>(`${this.apiUrl}/users/me`, dto);
   }
 
+  uploadAvatar(file: File): Observable<UpdatedProfile> {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    return this.http.post<UpdatedProfile>(`${this.apiUrl}/users/me/avatar`, formData);
+  }
+
   getMyBeers(status?: BeerStatus): Observable<UserBeerEntry[]> {
     let params = new HttpParams();
     if (status) {

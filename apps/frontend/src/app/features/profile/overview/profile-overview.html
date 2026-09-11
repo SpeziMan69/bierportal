@@ -4,12 +4,8 @@
 
   <div class="preview">
     <div class="preview-avatar">
-      @if (picture.trim()) {
-        <img
-          [src]="picture.trim() | mediaUrl"
-          alt="Vorschau"
-          (error)="$any($event.target).style.display = 'none'"
-        />
+      @if (picture().trim() && !imageError()) {
+        <img [src]="picture().trim() | mediaUrl" alt="Vorschau" (error)="imageError.set(true)" />
       } @else {
         <span>{{ (username || '?').charAt(0).toUpperCase() }}</span>
       }
@@ -29,15 +25,18 @@
   </div>
 
   <div class="form-group">
-    <label class="form-label" for="picture">Profilbild-URL</label>
-    <input
-      id="picture"
-      class="form-input"
-      name="picture"
-      type="url"
-      [(ngModel)]="picture"
-      placeholder="https://…"
-    />
+    <span class="form-label">Profilbild ändern</span>
+    <label class="btn btn-secondary file-upload" [class.disabled]="uploading()">
+      {{ uploading() ? 'Wird hochgeladen …' : 'Bild hochladen' }}
+      <input
+        name="avatar"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        (change)="onAvatarSelected($event)"
+        [disabled]="uploading()"
+        hidden
+      />
+    </label>
   </div>
 
   @if (error()) {

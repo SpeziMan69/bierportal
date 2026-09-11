@@ -117,3 +117,25 @@
     background: #1ed760;
   }
 }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+
+  &:hover:not(.disabled) {
+    border-color: var(--text-primary);
+  }
+}
+
+.file-upload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+}

@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { BeerService } from '../../services/beer';
 import type { Beer } from '../../models/beer';
@@ -10,7 +10,7 @@ import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
   templateUrl: './beer-detail.html',
   styleUrl: './beer-detail.css',
 })
-export class BeerDetail {
+export class BeerDetail implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly beerService = inject(BeerService);
 
@@ -18,7 +18,7 @@ export class BeerDetail {
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
 
-  constructor() {
+  ngOnInit(): void {
     this.loadBeer();
   }
 
