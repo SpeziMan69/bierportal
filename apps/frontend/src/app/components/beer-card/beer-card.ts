@@ -4,10 +4,11 @@ import type { Beer } from '../../models/beer';
 import { MediaUrlPipe } from '../../shared/pipes/media-url.pipe';
 import { BeerStatus } from '@bierportal/dtos';
 import { UserService } from '../../services/user';
+import { BeerReviews } from '../beer-reviews/beer-reviews';
 
 @Component({
   selector: 'app-beer-card',
-  imports: [RouterLink, MediaUrlPipe],
+  imports: [RouterLink, MediaUrlPipe, BeerReviews],
   templateUrl: './beer-card.html',
   styleUrl: './beer-card.css',
 })

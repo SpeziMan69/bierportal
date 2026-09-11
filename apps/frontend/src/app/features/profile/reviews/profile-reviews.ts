@@ -1,4 +1,4 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, inject, input, signal, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { UserService } from '../../../services/user';
@@ -11,7 +11,7 @@ import type { UserReview } from '../../../models/user';
   templateUrl: './profile-reviews.html',
   styleUrl: './profile-reviews.scss',
 })
-export class ProfileReviews {
+export class ProfileReviews implements OnInit {
   private readonly userService = inject(UserService);
 
   readonly userId = input.required<string>();
@@ -20,7 +20,7 @@ export class ProfileReviews {
   protected readonly loading = signal(true);
   protected readonly error = signal<string | null>(null);
 
-  constructor() {
+  ngOnInit(): void {
     this.load();
   }
 

@@ -56,3 +56,5 @@
 @if (entryError()) {
   <p role="alert">{{ entryError() }}</p>
 }
+
+<app-beer-reviews [beerId]="beer.id" />

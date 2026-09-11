@@ -1,0 +1,80 @@
+<section class="reviews">
+  <h3>Kommentare</h3>
+
+  @if (loading()) {
+    <p class="muted" role="status">Kommentare werden geladen …</p>
+  } @else if (loadError()) {
+    <p role="alert">{{ loadError() }}</p>
+    <button type="button" (click)="load(page())">Erneut versuchen</button>
+  } @else {
+    @for (review of reviews(); track review.id) {
+      <article class="review">
+        <div class="review-heading">
+          <strong>{{ review.user?.username ?? 'Unbekannter Nutzer' }}</strong>
+          <span>★ {{ review.rating }}</span>
+        </div>
+
+        @if (review.text) {
+          <p class="review-text">{{ review.text }}</p>
+        }
+
+        <small class="muted">
+          {{ review.createdAt | date: 'dd.MM.yyyy' }}
+        </small>
+      </article>
+    } @empty {
+      <p class="muted">Noch keine Kommentare.</p>
+    }
+
+    @if (totalPages() > 1) {
+      <div class="pagination">
+        <button type="button" [disabled]="page() <= 1" (click)="load(page() - 1)">Zurück</button>
+        <span>{{ page() }} / {{ totalPages() }}</span>
+        <button type="button" [disabled]="page() >= totalPages()" (click)="load(page() + 1)">
+          Weiter
+        </button>
+      </div>
+    }
+  }
+
+  @if (auth.user()) {
+    <form #reviewForm="ngForm" (ngSubmit)="submit()">
+      <label>
+        Bewertung
+        <select name="rating" [(ngModel)]="rating" required [disabled]="saving()">
+          <option [ngValue]="null" disabled>Bitte wählen</option>
+          @for (value of [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]; track value) {
+            <option [ngValue]="value">{{ value }} / 5</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Dein Kommentar
+        <textarea
+          name="text"
+          [(ngModel)]="text"
+          required
+          maxlength="2000"
+          rows="3"
+          placeholder="Wie hat dir das Bier geschmeckt?"
+          [disabled]="saving()"
+        ></textarea>
+      </label>
+
+      <button type="submit" [disabled]="saving() || reviewForm.invalid || !text.trim()">
+        {{ saving() ? 'Wird gespeichert …' : 'Review veröffentlichen' }}
+      </button>
+    </form>
+  } @else {
+    <a routerLink="/login">Anmelden und ein Review schreiben</a>
+  }
+
+  @if (saveError()) {
+    <p role="alert">{{ saveError() }}</p>
+  }
+
+  @if (success()) {
+    <p role="status">{{ success() }}</p>
+  }
+</section>
