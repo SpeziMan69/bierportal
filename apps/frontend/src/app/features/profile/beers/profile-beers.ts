@@ -23,7 +23,6 @@ export class ProfileBeers {
   protected readonly removingIds = signal<string[]>([]);
   protected readonly removeError = signal('');
 
-
   protected readonly filters: { value: BeerStatus; label: string }[] = [
     { value: BeerStatus.WISHLIST, label: 'Wunschliste' },
     { value: BeerStatus.TRIED, label: 'Probiert' },
@@ -70,20 +69,12 @@ export class ProfileBeers {
 
     this.userService.removeBeer(entryId).subscribe({
       next: () => {
-        this.entries.update((entries) =>
-          entries.filter((entry) => entry.id !== entryId),
-         );
-        this.removingIds.update((ids) =>
-          ids.filter((id) => id !== entryId),
-        );
+        this.entries.update((entries) => entries.filter((entry) => entry.id !== entryId));
+        this.removingIds.update((ids) => ids.filter((id) => id !== entryId));
       },
       error: () => {
-        this.removeError.set(
-          'Entfernen fehlgeschlagen. Bitte versuche es erneut.',
-        );
-        this.removingIds.update((ids) =>
-          ids.filter((id) => id !== entryId),
-        );
+        this.removeError.set('Entfernen fehlgeschlagen. Bitte versuche es erneut.');
+        this.removingIds.update((ids) => ids.filter((id) => id !== entryId));
       },
     });
   }

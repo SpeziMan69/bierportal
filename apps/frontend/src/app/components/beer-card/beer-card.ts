@@ -42,34 +42,27 @@ export class BeerCard {
   ];
 
   addToCollection(status: BeerStatus): void {
-    if (
-      this.savingStatuses().includes(status) ||
-      this.savedStatuses().includes(status)
-    ) {
+    if (this.savingStatuses().includes(status) || this.savedStatuses().includes(status)) {
       return;
     }
 
     this.savingStatuses.update((statuses) => [...statuses, status]);
     this.entryError.set('');
 
-    this.userService.addBeer({
-      beerId: this.beer.id,
-      status,
-    }).subscribe({
-      next: () => {
-        this.savedStatuses.update((statuses) => [...statuses, status]);
-        this.savingStatuses.update((statuses) =>
-          statuses.filter((value) => value !== status),
-        );
-      },
-      error: () => {
-        this.entryError.set(
-          'Speichern fehlgeschlagen. Bist du angemeldet?',
-        );
-        this.savingStatuses.update((statuses) =>
-          statuses.filter((value) => value !== status),
-        );
-      },
-    });
+    this.userService
+      .addBeer({
+        beerId: this.beer.id,
+        status,
+      })
+      .subscribe({
+        next: () => {
+          this.savedStatuses.update((statuses) => [...statuses, status]);
+          this.savingStatuses.update((statuses) => statuses.filter((value) => value !== status));
+        },
+        error: () => {
+          this.entryError.set('Speichern fehlgeschlagen. Bist du angemeldet?');
+          this.savingStatuses.update((statuses) => statuses.filter((value) => value !== status));
+        },
+      });
   }
 }

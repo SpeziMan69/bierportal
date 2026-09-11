@@ -37,8 +37,7 @@
     <button
       type="button"
       [disabled]="
-        savingStatuses().includes(button.status) ||
-        savedStatuses().includes(button.status)
+        savingStatuses().includes(button.status) || savedStatuses().includes(button.status)
       "
       (click)="addToCollection(button.status)"
     >

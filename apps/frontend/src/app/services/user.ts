@@ -39,14 +39,12 @@ export class UserService {
     }
     return this.http.get<UserBeerEntry[]>(`${this.apiUrl}/user-beers`, { params });
   }
-  
+
   addBeer(dto: CreateUserBeerDto): Observable<UserBeerEntry> {
     return this.http.post<UserBeerEntry>(`${this.apiUrl}/user-beers`, dto);
   }
 
   removeBeer(entryId: string): Observable<void> {
-    return this.http.delete<void>(
-      `${this.apiUrl}/user-beers/${encodeURIComponent(entryId)}`,
-    );
+    return this.http.delete<void>(`${this.apiUrl}/user-beers/${encodeURIComponent(entryId)}`);
   }
 }
