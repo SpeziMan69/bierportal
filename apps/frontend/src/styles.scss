@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@reference './tailwind.scss';
+@reference './tailwind.css';
 
 /* In @layer base so Tailwind utilities (in @layer utilities) still override it. */
 @layer base {
