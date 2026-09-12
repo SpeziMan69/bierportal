@@ -41,15 +41,16 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new AllExceptionsFilter());
-
-  const config = new DocumentBuilder()
-    .setTitle('Bierportal API')
-    .setDescription('Final project API')
-    .setVersion('1.0')
-    .addCookieAuth('token')
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  if (process.env.NODE_ENV === 'development') {
+    const config = new DocumentBuilder()
+      .setTitle('Bierportal API')
+      .setDescription('Final project API')
+      .setVersion('1.0')
+      .addCookieAuth('token')
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+  }
   await app.listen(process.env.PORT ?? 3000);
 }
 void bootstrap();
