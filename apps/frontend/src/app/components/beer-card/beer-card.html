@@ -1,18 +1,18 @@
 <a
-  class="beer-card"
+  class="panel-dark block min-w-0 flex-1 overflow-hidden p-6 text-inherit no-underline transition hover:border-blue-600 hover:-translate-y-1"
   [routerLink]="['/beers', beer.id]"
   [attr.aria-label]="'Details zu ' + beer.name"
 >
   <img
-    class="beer-card-image"
+    class="block h-60 w-full rounded-xl object-cover"
     [src]="beer.imageUrl | mediaUrl"
     [alt]="beer.name + ' von ' + beer.brewery"
     loading="lazy"
     (error)="$any($event.target).src = '/public/beer-placeholder.png'"
   />
 
-  <div class="beer-card-content">
-    <p class="beer-card-brewery">{{ beer.brewery }}</p>
+  <div class="pt-5">
+    <p class="font-bold text-blue-600">{{ beer.brewery }}</p>
     <h2>{{ beer.name }}</h2>
     <p>
       {{ beer.type }}
@@ -28,14 +28,17 @@
         Noch nicht bewertet
       }
     </p>
-    <span class="beer-card-link">Details ansehen <span aria-hidden="true">→</span></span>
+    <span class="mt-4 inline-block font-bold text-blue-600"
+      >Details ansehen <span aria-hidden="true">→</span></span
+    >
   </div>
 </a>
 
-<div class="collection-buttons">
+<div class="mt-3 flex flex-wrap gap-2">
   @for (button of collectionButtons; track button.status) {
     <button
       type="button"
+      class="btn-secondary disabled:cursor-default"
       [disabled]="
         savingStatuses().includes(button.status) || savedStatuses().includes(button.status)
       "
@@ -53,7 +56,7 @@
 </div>
 
 @if (entryError()) {
-  <p role="alert">{{ entryError() }}</p>
+  <p class="text-error" role="alert">{{ entryError() }}</p>
 }
 
 <app-beer-reviews [beerId]="beer.id" />
