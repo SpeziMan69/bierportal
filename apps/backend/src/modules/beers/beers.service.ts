@@ -47,8 +47,6 @@ export class BeersService {
       name: dto.name,
       description: dto.description,
       abv: dto.abv,
-      ibu: dto.ibu,
-      ebc: dto.ebc,
       imageUrl: dto.imageUrl,
       style: dto.style,
     });
@@ -78,8 +76,6 @@ export class BeersService {
     if (dto.name !== undefined) beer.name = dto.name;
     if (dto.description !== undefined) beer.description = dto.description;
     if (dto.abv !== undefined) beer.abv = dto.abv;
-    if (dto.ibu !== undefined) beer.ibu = dto.ibu;
-    if (dto.ebc !== undefined) beer.ebc = dto.ebc;
     if (dto.imageUrl !== undefined) beer.imageUrl = dto.imageUrl;
     if (dto.style !== undefined) beer.style = dto.style;
     if (dto.breweryId !== undefined) {

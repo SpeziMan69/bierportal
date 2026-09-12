@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Brewery } from './brewery.entity';
 import { Review } from './review.entity';
-import { UserBeerEntry } from './user-entry.entity';
+import { UserBeerEntry } from './user-beer-entry.entity';
 
 @Entity()
 export class Beer {
@@ -35,12 +35,6 @@ export class Beer {
 
   @Column({ type: 'decimal', precision: 4, scale: 1, nullable: true })
   abv!: number;
-
-  @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true })
-  ibu!: number;
-
-  @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true })
-  ebc!: number;
 
   @Column({ nullable: true })
   style!: string;

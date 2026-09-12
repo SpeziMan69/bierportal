@@ -27,16 +27,6 @@ export class CreateBeerDto {
   abv?: number;
 
   @IsOptional()
-  @IsNumber()
-  @Min(0)
-  ibu?: number;
-
-  @IsOptional()
-  @IsNumber()
-  @Min(0)
-  ebc?: number;
-
-  @IsOptional()
   @IsString()
   @MaxLength(2048)
   imageUrl?: string;

@@ -205,8 +205,6 @@ Create a beer.
   | `name` | string | required, max 200 |
   | `description` | string | optional, max 5000 |
   | `abv` | number | optional, 0–100 |
-  | `ibu` | number | optional, ≥ 0 |
-  | `ebc` | number | optional, ≥ 0 |
   | `imageUrl` | string | optional, max 2048 |
   | `style` | string | optional, max 100 |
   | `breweryId` | string | optional, UUID |

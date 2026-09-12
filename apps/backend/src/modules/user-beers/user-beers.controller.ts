@@ -16,7 +16,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UserBeersService } from './user-beers.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
 import { CreateUserBeerDto, UpdateUserBeerDto } from '@bierportal/dtos';
-import { BeerStatus } from '../../common/entities/user-entry.entity';
+import { BeerStatus } from '../../common/entities/user-beer-entry.entity';
 
 type AuthedRequest = Request & { user: { id: string } };
 

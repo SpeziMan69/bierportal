@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { BeerStatus, UserBeerEntry } from '../../common/entities/user-entry.entity';
+import { BeerStatus, UserBeerEntry } from '../../common/entities/user-beer-entry.entity';
 import { Beer } from '../../common/entities/beer.entity';
 import { User } from '../users/user.entity';
 import { CreateUserBeerDto, UpdateUserBeerDto } from '@bierportal/dtos';

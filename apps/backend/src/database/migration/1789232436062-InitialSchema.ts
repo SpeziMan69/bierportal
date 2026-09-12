@@ -1,20 +1,20 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class InitialSchema1788941201732 implements MigrationInterface {
-  name = 'InitialSchema1788941201732';
+export class InitialSchema1789232436062 implements MigrationInterface {
+  name = 'InitialSchema1789232436062';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "brewery" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "sourceId" integer, "externalId" character varying, "name" character varying NOT NULL, "city" character varying, "state" character varying, "country" character varying, "region" character varying, "website" character varying, "description" text, "logoUrl" character varying, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_2758c30fdf45037929e3279f946" UNIQUE ("sourceId"), CONSTRAINT "UQ_18b185707a96e99cecf260367d3" UNIQUE ("externalId"), CONSTRAINT "PK_d02cc4f101bd53d64d9c1c87294" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "brewery" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "sourceId" integer, "externalId" character varying, "name" character varying NOT NULL, "city" character varying, "state" character varying, "country" character varying, "region" character varying, "website" character varying, "description" text, "logoUrl" character varying, "isActive" boolean NOT NULL DEFAULT true, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "UQ_2758c30fdf45037929e3279f946" UNIQUE ("sourceId"), CONSTRAINT "UQ_18b185707a96e99cecf260367d3" UNIQUE ("externalId"), CONSTRAINT "PK_d02cc4f101bd53d64d9c1c87294" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TYPE "public"."user_beer_entry_status_enum" AS ENUM('tried', 'wishlist', 'cellar')`,
     );
     await queryRunner.query(
-      `CREATE TABLE "user_beer_entry" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "status" "public"."user_beer_entry_status_enum" NOT NULL, "note" character varying, "addedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, "beerId" uuid, CONSTRAINT "UQ_ebbc28b16a7f3275a70a4a82795" UNIQUE ("userId", "beerId"), CONSTRAINT "PK_496bede2e09105c5d9c907a082d" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "user_beer_entry" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "status" "public"."user_beer_entry_status_enum" NOT NULL, "note" character varying, "addedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, "beerId" uuid, CONSTRAINT "UQ_1373fa2609f1ebea7c61d1a22c9" UNIQUE ("userId", "beerId", "status"), CONSTRAINT "PK_496bede2e09105c5d9c907a082d" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
-      `CREATE TABLE "beer" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "sourceId" integer, "externalId" character varying, "name" character varying NOT NULL, "imageUrl" character varying, "description" text, "abv" numeric(4,1), "ibu" numeric(6,1), "ebc" numeric(6,1), "style" character varying, "isActive" boolean NOT NULL DEFAULT true, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "avgRating" numeric(3,2) NOT NULL DEFAULT '0', "ratingCount" integer NOT NULL DEFAULT '0', "breweryId" uuid, CONSTRAINT "UQ_d2e93ea3b05f11e6d1f565689b0" UNIQUE ("sourceId"), CONSTRAINT "UQ_a082bb470b20871046a43fc01ca" UNIQUE ("externalId"), CONSTRAINT "PK_68ce81153952014a6e8b20df5c1" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "beer" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "sourceId" integer, "externalId" character varying, "name" character varying NOT NULL, "imageUrl" character varying, "description" text, "abv" numeric(4,1), "style" character varying, "isActive" boolean NOT NULL DEFAULT true, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "avgRating" numeric(3,2) NOT NULL DEFAULT '0', "ratingCount" integer NOT NULL DEFAULT '0', "breweryId" uuid, CONSTRAINT "UQ_d2e93ea3b05f11e6d1f565689b0" UNIQUE ("sourceId"), CONSTRAINT "UQ_a082bb470b20871046a43fc01ca" UNIQUE ("externalId"), CONSTRAINT "PK_68ce81153952014a6e8b20df5c1" PRIMARY KEY ("id"))`,
     );
     await queryRunner.query(
       `CREATE TABLE "review_like" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" uuid, "reviewId" uuid, CONSTRAINT "UQ_70765efe5debac97e61d96836d0" UNIQUE ("userId", "reviewId"), CONSTRAINT "PK_d40f62b4eca95d56b89c525a0d8" PRIMARY KEY ("id"))`,

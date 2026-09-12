@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserBeerEntry } from '../../common/entities/user-entry.entity';
+import { UserBeerEntry } from '../../common/entities/user-beer-entry.entity';
 import { Beer } from '../../common/entities/beer.entity';
 import { UserBeersController } from './user-beers.controller';
 import { UserBeersService } from './user-beers.service';

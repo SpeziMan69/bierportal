@@ -140,12 +140,6 @@ function num(value: string | undefined): number | undefined {
   return Number.isFinite(n) ? n : undefined;
 }
 
-// Like num(), but also treats "0" as missing (the dump uses 0 as an "unknown" sentinel for ibu/srm).
-function numNonZero(value: string | undefined): number | undefined {
-  const n = num(value);
-  return n === 0 ? undefined : n;
-}
-
 function str(value: string | undefined): string | undefined {
   const v = value?.trim();
   return v || undefined;
@@ -421,7 +415,6 @@ export async function seed() {
         sourceId: Number(r.id),
         name: r.name,
         abv: num(r.abv),
-        ibu: numNonZero(r.ibu),
         description: str(r.descript),
         imageUrl: PLACEHOLDER_IMAGE_URL,
         brewery: findBrewery(obdbBreweryById.get(Number(r.brewery_id))?.name),
