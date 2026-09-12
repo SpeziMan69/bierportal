@@ -1,8 +1,9 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 import { BeerCard } from '../../components/beer-card/beer-card';
 import type { Beer } from '../../models/beer';
-import { BeerService } from '../../services/beer';
+import { BeerService, type BeerFilters } from '../../services/beer';
 
 type BeerSort = 'name-asc' | 'rating-desc' | 'alcohol-asc' | 'alcohol-desc';
 
@@ -12,7 +13,7 @@ type BeerSort = 'name-asc' | 'rating-desc' | 'alcohol-asc' | 'alcohol-desc';
   templateUrl: './beer-list.html',
   styleUrl: './beer-list.css',
 })
-export class BeerList implements OnInit {
+export class BeerList implements OnInit, OnDestroy {
   private readonly beerService = inject(BeerService);
 
   protected readonly beers = signal<Beer[]>([]);
@@ -28,62 +29,55 @@ export class BeerList implements OnInit {
   protected readonly totalPages = signal(1);
   protected readonly totalBeers = signal(0);
 
-  private readonly pageSize = 100;
+  private readonly pageSize = 24;
 
   ngOnInit(): void {
+    this.loadFilterOptions();
     this.loadInitialBeers();
   }
 
-  protected get beerTypes(): string[] {
-    return [...new Set(this.beers().map((beer) => beer.type))].sort((firstType, secondType) =>
-      firstType.localeCompare(secondType, 'de'),
-    );
+  protected readonly beerTypes = signal<string[]>([]);
+  protected readonly countries = signal<string[]>([]);
+  protected readonly filterError = signal('');
+  protected readonly moreError = signal('');
+  private request?: Subscription;
+  private optionsRequest?: Subscription;
+  private searchTimer?: ReturnType<typeof setTimeout>;
+
+  ngOnDestroy(): void {
+    clearTimeout(this.searchTimer);
+    this.request?.unsubscribe();
+    this.optionsRequest?.unsubscribe();
   }
 
-  protected get countries(): string[] {
-    return [...new Set(this.beers().map((beer) => beer.country))].sort(
-      (firstCountry, secondCountry) => firstCountry.localeCompare(secondCountry, 'de'),
-    );
+  protected loadFilterOptions(): void {
+    this.optionsRequest?.unsubscribe();
+    this.filterError.set('');
+    this.optionsRequest = this.beerService.getFilterOptions().subscribe({
+      next: (options) => {
+        this.beerTypes.set(options.styles);
+        this.countries.set(options.countries);
+      },
+      error: () => this.filterError.set('Filteroptionen konnten nicht geladen werden.'),
+    });
   }
 
-  protected get filteredBeers(): Beer[] {
-    const normalizedSearch = this.searchTerm.trim().toLocaleLowerCase('de');
+  protected searchChanged(value: string): void {
+    this.searchTerm = value;
+    clearTimeout(this.searchTimer);
+    this.request?.unsubscribe();
+    this.loading.set(true);
+    this.loadingMore.set(false);
+    this.searchTimer = setTimeout(() => this.loadInitialBeers(), 300);
+  }
 
-    const result = this.beers().filter((beer) => {
-      const matchesSearch =
-        normalizedSearch === '' ||
-        beer.name.toLocaleLowerCase('de').includes(normalizedSearch) ||
-        beer.brewery.toLocaleLowerCase('de').includes(normalizedSearch);
-
-      const matchesType = this.selectedType === '' || beer.type === this.selectedType;
-
-      const matchesCountry = this.selectedCountry === '' || beer.country === this.selectedCountry;
-
-      return matchesSearch && matchesType && matchesCountry;
-    });
-
-    return [...result].sort((firstBeer, secondBeer) => {
-      switch (this.selectedSort) {
-        case 'rating-desc':
-          return (secondBeer.rating ?? 0) - (firstBeer.rating ?? 0);
-
-        case 'alcohol-asc':
-          return (
-            (firstBeer.alcohol ?? Number.POSITIVE_INFINITY) -
-            (secondBeer.alcohol ?? Number.POSITIVE_INFINITY)
-          );
-
-        case 'alcohol-desc':
-          return (
-            (secondBeer.alcohol ?? Number.NEGATIVE_INFINITY) -
-            (firstBeer.alcohol ?? Number.NEGATIVE_INFINITY)
-          );
-
-        case 'name-asc':
-        default:
-          return firstBeer.name.localeCompare(secondBeer.name, 'de');
-      }
-    });
+  private get currentFilters(): BeerFilters {
+    return {
+      q: this.searchTerm,
+      style: this.selectedType,
+      country: this.selectedCountry,
+      sort: this.selectedSort,
+    };
   }
 
   protected get filtersAreActive(): boolean {
@@ -96,10 +90,18 @@ export class BeerList implements OnInit {
   }
 
   protected loadInitialBeers(): void {
+    clearTimeout(this.searchTimer);
+    this.request?.unsubscribe();
+    this.loadingMore.set(false);
+    this.beers.set([]);
+    this.currentPage.set(0);
+    this.totalPages.set(0);
+    this.totalBeers.set(0);
+    this.moreError.set('');
     this.loading.set(true);
     this.error.set(null);
 
-    this.beerService.getBeers(1, this.pageSize).subscribe({
+    this.request = this.beerService.getBeers(1, this.pageSize, this.currentFilters).subscribe({
       next: (response) => {
         this.beers.set(response.items);
         this.currentPage.set(response.page);
@@ -115,32 +117,36 @@ export class BeerList implements OnInit {
   }
 
   protected loadMoreBeers(): void {
-    if (this.loadingMore() || !this.canLoadMore) {
+    if (this.loading() || this.loadingMore() || !this.canLoadMore) {
       return;
     }
 
     const nextPage = this.currentPage() + 1;
 
     this.loadingMore.set(true);
+    this.moreError.set('');
 
-    this.beerService.getBeers(nextPage, this.pageSize).subscribe({
-      next: (response) => {
-        const uniqueBeers = new Map<string, Beer>();
+    this.request = this.beerService
+      .getBeers(nextPage, this.pageSize, this.currentFilters)
+      .subscribe({
+        next: (response) => {
+          const uniqueBeers = new Map<string, Beer>();
 
-        for (const beer of [...this.beers(), ...response.items]) {
-          uniqueBeers.set(beer.id, beer);
-        }
+          for (const beer of [...this.beers(), ...response.items]) {
+            uniqueBeers.set(beer.id, beer);
+          }
 
-        this.beers.set([...uniqueBeers.values()]);
-        this.currentPage.set(response.page);
-        this.totalPages.set(response.totalPages);
-        this.totalBeers.set(response.total);
-        this.loadingMore.set(false);
-      },
-      error: () => {
-        this.loadingMore.set(false);
-      },
-    });
+          this.beers.set([...uniqueBeers.values()]);
+          this.currentPage.set(response.page);
+          this.totalPages.set(response.totalPages);
+          this.totalBeers.set(response.total);
+          this.loadingMore.set(false);
+        },
+        error: () => {
+          this.moreError.set('Weitere Biere konnten nicht geladen werden. Bitte erneut versuchen.');
+          this.loadingMore.set(false);
+        },
+      });
   }
 
   protected get canLoadMore(): boolean {
@@ -151,5 +157,6 @@ export class BeerList implements OnInit {
     this.selectedType = '';
     this.selectedCountry = '';
     this.selectedSort = 'name-asc';
+    this.loadInitialBeers();
   }
 }

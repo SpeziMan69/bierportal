@@ -9,8 +9,8 @@
     </div>
 
     <p class="result-count">
-      {{ filteredBeers.length }}
-      {{ filteredBeers.length === 1 ? 'Bier' : 'Biere' }} gefunden
+      {{ totalBeers() }}
+      {{ totalBeers() === 1 ? 'Bier' : 'Biere' }} gefunden
     </p>
   </header>
 
@@ -25,7 +25,8 @@
           id="beer-search"
           type="search"
           name="beer-search"
-          [(ngModel)]="searchTerm"
+          [ngModel]="searchTerm"
+          (ngModelChange)="searchChanged($event)"
           placeholder="Name oder Brauerei suchen"
           autocomplete="off"
         />
@@ -35,10 +36,15 @@
     <div class="filter-field">
       <label for="beer-type">Biersorte</label>
 
-      <select id="beer-type" name="beer-type" [(ngModel)]="selectedType">
+      <select
+        id="beer-type"
+        name="beer-type"
+        [ngModel]="selectedType"
+        (ngModelChange)="selectedType = $event; loadInitialBeers()"
+      >
         <option value="">Alle Sorten</option>
 
-        @for (type of beerTypes; track type) {
+        @for (type of beerTypes(); track type) {
           <option [value]="type">{{ type }}</option>
         }
       </select>
@@ -47,10 +53,15 @@
     <div class="filter-field">
       <label for="beer-country">Herkunft</label>
 
-      <select id="beer-country" name="beer-country" [(ngModel)]="selectedCountry">
+      <select
+        id="beer-country"
+        name="beer-country"
+        [ngModel]="selectedCountry"
+        (ngModelChange)="selectedCountry = $event; loadInitialBeers()"
+      >
         <option value="">Alle Länder</option>
 
-        @for (country of countries; track country) {
+        @for (country of countries(); track country) {
           <option [value]="country">{{ country }}</option>
         }
       </select>
@@ -59,7 +70,12 @@
     <div class="filter-field">
       <label for="beer-sort">Sortierung</label>
 
-      <select id="beer-sort" name="beer-sort" [(ngModel)]="selectedSort">
+      <select
+        id="beer-sort"
+        name="beer-sort"
+        [ngModel]="selectedSort"
+        (ngModelChange)="selectedSort = $event; loadInitialBeers()"
+      >
         <option value="name-asc">Name A–Z</option>
         <option value="rating-desc">Beste Bewertung</option>
         <option value="alcohol-asc">Alkohol aufsteigend</option>
@@ -77,6 +93,11 @@
     </button>
   </section>
 
+  @if (filterError()) {
+    <p role="alert">{{ filterError() }}</p>
+    <button type="button" (click)="loadFilterOptions()">Filter erneut laden</button>
+  }
+
   @if (loading()) {
     <div class="empty-state">
       <h2>Biere werden geladen</h2>
@@ -91,13 +112,16 @@
         Erneut versuchen
       </button>
     </div>
-  } @else if (filteredBeers.length > 0) {
+  } @else if (totalBeers() > 0) {
     <div class="beer-grid">
-      @for (beer of filteredBeers; track beer.id) {
+      @for (beer of beers(); track beer.id) {
         <app-beer-card [beer]="beer" />
       }
     </div>
     <div class="load-more-section">
+      @if (moreError()) {
+        <p role="alert">{{ moreError() }}</p>
+      }
       <p class="loaded-count">{{ beers().length }} von {{ totalBeers() }} Produkten geladen</p>
 
       @if (canLoadMore) {

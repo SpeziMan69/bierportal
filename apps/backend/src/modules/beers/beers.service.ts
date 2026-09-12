@@ -113,6 +113,31 @@ export class BeersService {
     return brewery;
   }
 
+  async getFilterOptions(): Promise<{ styles: string[]; countries: string[] }> {
+    const base = this.beerRepository
+      .createQueryBuilder('beer')
+      .leftJoin('beer.brewery', 'brewery')
+      .where('beer.isActive = :active', { active: true });
+    const [styles, countries] = await Promise.all([
+      base
+        .clone()
+        .select("COALESCE(beer.style, 'Beer')", 'value')
+        .distinct(true)
+        .orderBy('value', 'ASC')
+        .getRawMany<{ value: string }>(),
+      base
+        .clone()
+        .select("COALESCE(brewery.country, 'Unknown')", 'value')
+        .distinct(true)
+        .orderBy('value', 'ASC')
+        .getRawMany<{ value: string }>(),
+    ]);
+    return {
+      styles: styles.map((row) => row.value).filter((value) => value.trim()),
+      countries: countries.map((row) => row.value).filter((value) => value.trim()),
+    };
+  }
+
   async findAll(options: BeerSearchOptions = {}) {
     const safePage = Math.max(1, options.page ?? 1);
     const safeLimit = Math.min(Math.max(1, options.limit ?? 24), 100);
@@ -126,10 +151,12 @@ export class BeersService {
       qb.andWhere('(beer.name ILIKE :q OR brewery.name ILIKE :q)', { q: `%${options.q.trim()}%` });
     }
     if (options.style?.trim()) {
-      qb.andWhere('beer.style ILIKE :style', { style: `%${options.style.trim()}%` });
+      qb.andWhere("COALESCE(beer.style, 'Beer') = :style", { style: options.style.trim() });
     }
     if (options.country?.trim()) {
-      qb.andWhere('brewery.country ILIKE :country', { country: `%${options.country.trim()}%` });
+      qb.andWhere("COALESCE(brewery.country, 'Unknown') = :country", {
+        country: options.country.trim(),
+      });
     }
 
     switch (options.sort) {
@@ -146,6 +173,7 @@ export class BeersService {
         qb.orderBy('beer.name', 'ASC');
     }
 
+    qb.addOrderBy('beer.id', 'ASC');
     qb.skip((safePage - 1) * safeLimit).take(safeLimit);
 
     const [beers, total] = await qb.getManyAndCount();

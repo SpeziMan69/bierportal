@@ -27,6 +27,11 @@ import { CreateBeerDto, UpdateBeerDto } from '@bierportal/dtos';
 export class BeersController {
   constructor(private readonly beersService: BeersService) {}
 
+  @Get('filters')
+  getFilters() {
+    return this.beersService.getFilterOptions();
+  }
+
   @ApiOperation({
     summary: 'List beers (paginated, filterable)',
     description:

@@ -1,7 +1,7 @@
 import { Component, DestroyRef, Input, OnChanges, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Subscription } from 'rxjs';
@@ -20,6 +20,10 @@ export class BeerReviews implements OnChanges {
   protected readonly auth = inject(Auth);
   private readonly reviewService = inject(ReviewService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+  private likeRequests = new Subscription();
+  protected readonly liking = signal<string[]>([]);
+  protected readonly likeErrors = signal<Record<string, string>>({});
   private listRequest?: Subscription;
   private saveRequest?: Subscription;
 
@@ -49,6 +53,10 @@ export class BeerReviews implements OnChanges {
   }
 
   protected load(page = 1): void {
+    this.likeRequests.unsubscribe();
+    this.likeRequests = new Subscription();
+    this.liking.set([]);
+    this.likeErrors.set({});
     this.listRequest?.unsubscribe();
     this.loading.set(true);
     this.loadError.set('');
@@ -68,6 +76,48 @@ export class BeerReviews implements OnChanges {
           this.loading.set(false);
         },
       });
+  }
+
+  protected toggleLike(review: BeerReview): void {
+    const user = this.auth.user();
+    if (!user) {
+      void this.router.navigate(['/login']);
+      return;
+    }
+    if (review.user?.id === user.id || this.liking().includes(review.id)) return;
+    this.liking.update((ids) => [...ids, review.id]);
+    this.likeErrors.update((errors) => ({ ...errors, [review.id]: '' }));
+    const request = review.likedByMe
+      ? this.reviewService.unlike(review.id)
+      : this.reviewService.like(review.id);
+    this.likeRequests.add(
+      request.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+        next: (result) => {
+          this.reviews.update((reviews) =>
+            reviews.map((item) =>
+              item.id === review.id
+                ? { ...item, likedByMe: result.liked, likeCount: result.likeCount }
+                : item,
+            ),
+          );
+          this.liking.update((ids) => ids.filter((id) => id !== review.id));
+        },
+        error: (error: HttpErrorResponse) => {
+          this.liking.update((ids) => ids.filter((id) => id !== review.id));
+          if (error.status === 409 || error.status === 404) {
+            this.load(this.page());
+            return;
+          }
+          this.likeErrors.update((errors) => ({
+            ...errors,
+            [review.id]:
+              error.status === 401
+                ? 'Bitte melde dich erneut an.'
+                : 'Like konnte nicht gespeichert werden. Bitte erneut versuchen.',
+          }));
+        },
+      }),
+    );
   }
 
   protected submit(): void {

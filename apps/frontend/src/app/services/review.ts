@@ -9,11 +9,18 @@ export interface BeerReview {
   rating: number;
   text: string | null;
   createdAt: string;
+  likeCount: number;
+  likedByMe: boolean;
   user: {
     id: string;
     username: string;
     picture: string | null;
   } | null;
+}
+
+export interface ReviewLikeResult {
+  liked: boolean;
+  likeCount: number;
 }
 
 export interface ReviewPage {
@@ -34,6 +41,19 @@ export class ReviewService {
     return this.http.get<ReviewPage>(`${this.apiUrl}/beer/${encodeURIComponent(beerId)}`, {
       params,
     });
+  }
+
+  like(reviewId: string): Observable<ReviewLikeResult> {
+    return this.http.post<ReviewLikeResult>(
+      `${this.apiUrl}/${encodeURIComponent(reviewId)}/like`,
+      {},
+    );
+  }
+
+  unlike(reviewId: string): Observable<ReviewLikeResult> {
+    return this.http.delete<ReviewLikeResult>(
+      `${this.apiUrl}/${encodeURIComponent(reviewId)}/like`,
+    );
   }
 
   create(dto: CreateReviewDto): Observable<BeerReview> {
