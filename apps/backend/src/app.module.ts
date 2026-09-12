@@ -17,7 +17,7 @@ import { Beer } from './common/entities/beer.entity';
 import { Brewery } from './common/entities/brewery.entity';
 import { Review } from './common/entities/review.entity';
 import { ReviewLike } from './common/entities/review-like.entity';
-import { UserBeerEntry } from './common/entities/user-entry.entity';
+import { UserBeerEntry } from './common/entities/user-beer-entry.entity';
 
 @Module({
   imports: [

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Brewery } from './brewery.entity';
 import { Review } from './review.entity';
-import { UserBeerEntry } from './user-entry.entity';
+import { UserBeerEntry } from './user-beer-entry.entity';
 
 @Entity()
 export class Beer {

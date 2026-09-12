@@ -5,7 +5,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { UserBeersController } from './user-beers.controller';
 import { UserBeersService } from './user-beers.service';
-import { BeerStatus, UserBeerEntry } from '../../common/entities/user-entry.entity';
+import { BeerStatus, UserBeerEntry } from '../../common/entities/user-beer-entry.entity';
 import { Beer } from '../../common/entities/beer.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt.authguard';
 
