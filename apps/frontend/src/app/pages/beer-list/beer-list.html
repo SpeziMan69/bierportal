@@ -1,40 +1,30 @@
-<section class="bg-neutral-900 px-6 py-12 text-white">
-  <header
-    class="mx-auto mb-8 flex max-w-6xl flex-col items-start gap-4 sm:flex-row sm:items-end sm:justify-between"
-  >
+<section class="beer-list">
+  <header class="beer-list-header">
     <div>
-      <p class="mb-1 text-sm font-bold uppercase tracking-wider text-blue-600">Bierkatalog</p>
-      <h1 class="text-4xl font-bold sm:text-5xl">Unsere Biere</h1>
-      <p class="mt-3 max-w-md text-neutral-400">
+      <p class="eyebrow">Bierkatalog</p>
+      <h1>Unsere Biere</h1>
+      <p class="beer-list-intro">
         Entdecke verschiedene Bierstile, Brauereien und Herkunftsländer.
       </p>
     </div>
 
-    <p class="shrink-0 font-semibold text-neutral-400">
+    <p class="result-count">
       {{ filteredBeers.length }}
       {{ filteredBeers.length === 1 ? 'Bier' : 'Biere' }} gefunden
     </p>
   </header>
 
-  <section
-    class="panel-dark mx-auto mb-10 grid max-w-6xl grid-cols-1 items-end gap-4 p-4 sm:grid-cols-2 lg:grid-cols-5"
-    aria-label="Bierauswahl filtern"
-  >
-    <div class="flex flex-col gap-2 sm:col-span-2 lg:col-span-1">
-      <label for="beer-search" class="text-sm font-bold text-neutral-300">Suche</label>
+  <section class="filter-panel" aria-label="Bierauswahl filtern">
+    <div class="filter-field filter-field-search">
+      <label for="beer-search">Suche</label>
 
-      <div class="relative">
-        <span
-          class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500"
-          aria-hidden="true"
-          >⌕</span
-        >
+      <div class="search-input-wrapper">
+        <span class="search-icon" aria-hidden="true">⌕</span>
 
         <input
           id="beer-search"
           type="search"
           name="beer-search"
-          class="input-dark pl-9 pr-3"
           [(ngModel)]="searchTerm"
           placeholder="Name oder Brauerei suchen"
           autocomplete="off"
@@ -42,10 +32,10 @@
       </div>
     </div>
 
-    <div class="flex flex-col gap-2">
-      <label for="beer-type" class="text-sm font-bold text-neutral-300">Biersorte</label>
+    <div class="filter-field">
+      <label for="beer-type">Biersorte</label>
 
-      <select id="beer-type" name="beer-type" class="input-dark px-3" [(ngModel)]="selectedType">
+      <select id="beer-type" name="beer-type" [(ngModel)]="selectedType">
         <option value="">Alle Sorten</option>
 
         @for (type of beerTypes; track type) {
@@ -54,15 +44,10 @@
       </select>
     </div>
 
-    <div class="flex flex-col gap-2">
-      <label for="beer-country" class="text-sm font-bold text-neutral-300">Herkunft</label>
+    <div class="filter-field">
+      <label for="beer-country">Herkunft</label>
 
-      <select
-        id="beer-country"
-        name="beer-country"
-        class="input-dark px-3"
-        [(ngModel)]="selectedCountry"
-      >
+      <select id="beer-country" name="beer-country" [(ngModel)]="selectedCountry">
         <option value="">Alle Länder</option>
 
         @for (country of countries; track country) {
@@ -71,10 +56,10 @@
       </select>
     </div>
 
-    <div class="flex flex-col gap-2">
-      <label for="beer-sort" class="text-sm font-bold text-neutral-300">Sortierung</label>
+    <div class="filter-field">
+      <label for="beer-sort">Sortierung</label>
 
-      <select id="beer-sort" name="beer-sort" class="input-dark px-3" [(ngModel)]="selectedSort">
+      <select id="beer-sort" name="beer-sort" [(ngModel)]="selectedSort">
         <option value="name-asc">Name A–Z</option>
         <option value="rating-desc">Beste Bewertung</option>
         <option value="alcohol-asc">Alkohol aufsteigend</option>
@@ -83,7 +68,7 @@
     </div>
 
     <button
-      class="h-11 w-full whitespace-nowrap rounded-lg bg-blue-600 px-4 font-bold text-white hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-40"
+      class="reset-button"
       type="button"
       (click)="resetFilters()"
       [disabled]="!filtersAreActive"
@@ -93,32 +78,32 @@
   </section>
 
   @if (loading()) {
-    <div class="state-panel">
-      <h2 class="text-2xl font-bold">Biere werden geladen</h2>
-      <p class="mt-3 mb-6 text-neutral-400">Die Bierdaten werden von der API abgerufen.</p>
+    <div class="empty-state">
+      <h2>Biere werden geladen</h2>
+      <p>Die Bierdaten werden von der API abgerufen.</p>
     </div>
   } @else if (error()) {
-    <div class="state-panel">
-      <h2 class="text-2xl font-bold">Biere konnten nicht geladen werden</h2>
-      <p class="mt-3 mb-6 text-neutral-400">{{ error() }}</p>
+    <div class="empty-state">
+      <h2>Biere konnten nicht geladen werden</h2>
+      <p>{{ error() }}</p>
 
-      <button type="button" class="btn-cta" (click)="loadInitialBeers()">Erneut versuchen</button>
+      <button type="button" class="empty-state-button" (click)="loadInitialBeers()">
+        Erneut versuchen
+      </button>
     </div>
   } @else if (filteredBeers.length > 0) {
-    <div
-      class="mx-auto grid max-w-6xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-    >
+    <div class="beer-grid">
       @for (beer of filteredBeers; track beer.id) {
         <app-beer-card [beer]="beer" />
       }
     </div>
-    <div class="mx-auto mt-12 flex max-w-6xl flex-col items-center gap-3 text-center">
-      <p class="text-neutral-400">{{ beers().length }} von {{ totalBeers() }} Produkten geladen</p>
+    <div class="load-more-section">
+      <p class="loaded-count">{{ beers().length }} von {{ totalBeers() }} Produkten geladen</p>
 
       @if (canLoadMore) {
         <button
           type="button"
-          class="min-w-56 rounded-full bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-500 disabled:cursor-wait disabled:opacity-60"
+          class="load-more-button"
           (click)="loadMoreBeers()"
           [disabled]="loadingMore()"
         >
@@ -129,15 +114,17 @@
           }
         </button>
       } @else {
-        <p class="text-neutral-400">Alle verfügbaren Biere wurden geladen.</p>
+        <p class="all-loaded">Alle verfügbaren Biere wurden geladen.</p>
       }
     </div>
   } @else {
-    <div class="state-panel">
-      <h2 class="text-2xl font-bold">Keine Biere gefunden</h2>
-      <p class="mt-3 mb-6 text-neutral-400">Ändere deine Suche oder setze die Filter zurück.</p>
+    <div class="empty-state">
+      <h2>Keine Biere gefunden</h2>
+      <p>Ändere deine Suche oder setze die Filter zurück.</p>
 
-      <button type="button" class="btn-cta" (click)="resetFilters()">Alle Biere anzeigen</button>
+      <button type="button" class="empty-state-button" (click)="resetFilters()">
+        Alle Biere anzeigen
+      </button>
     </div>
   }
 </section>

@@ -3,3 +3,83 @@
   flex-direction: column;
   min-width: 0;
 }
+
+.beer-card {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 24px;
+  overflow: hidden;
+  color: inherit;
+  text-decoration: none;
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 18px;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.beer-card:hover {
+  transform: translateY(-4px);
+  border-color: #f5c16c;
+  box-shadow: 0 16px 32px rgb(0 0 0 / 30%);
+}
+
+.beer-card:focus-visible {
+  outline: 3px solid #f5c16c;
+  outline-offset: 4px;
+}
+
+.beer-card-image {
+  display: block;
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.beer-card-content {
+  padding-top: 20px;
+}
+
+.beer-card-brewery {
+  color: #f5c16c;
+  font-weight: 700;
+}
+
+.beer-card-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: #f5c16c;
+  font-weight: 700;
+}
+
+.collection-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.collection-buttons button {
+  padding: 10px 14px;
+  border: 1px solid #f5c16c;
+  border-radius: 8px;
+  background: #181818;
+  color: #f5c16c;
+  font: inherit;
+  cursor: pointer;
+}
+
+.collection-buttons button:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.collection-buttons button:focus-visible {
+  outline: 2px solid #f5c16c;
+  outline-offset: 3px;
+}
