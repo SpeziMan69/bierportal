@@ -8,7 +8,6 @@ import { Auth } from '../../core/auth/auth';
   standalone: true,
   imports: [FormsModule, RouterLink],
   templateUrl: './login.html',
-  styleUrl: './login.scss',
 })
 export class Login {
   protected auth = inject(Auth);

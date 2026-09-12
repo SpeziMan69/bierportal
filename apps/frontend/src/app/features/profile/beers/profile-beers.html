@@ -1,10 +1,12 @@
-<div class="beers">
-  <div class="filter-bar">
+<div class="flex flex-col gap-5 text-white">
+  <div class="flex flex-wrap gap-2">
     @for (option of filters; track option.value) {
       <button
         type="button"
-        class="filter-chip"
-        [class.active]="filter() === option.value"
+        class="rounded-full border border-neutral-600 px-4 py-2 text-sm font-semibold text-neutral-400 transition hover:text-white"
+        [class.bg-blue-600]="filter() === option.value"
+        [class.border-blue-600]="filter() === option.value"
+        [class.text-neutral-900]="filter() === option.value"
         (click)="setFilter(option.value)"
       >
         {{ option.label }}
@@ -13,48 +15,55 @@
   </div>
 
   @if (removeError()) {
-    <p class="error-msg" role="alert">{{ removeError() }}</p>
+    <p class="text-error" role="alert">{{ removeError() }}</p>
   }
+
   @if (loading()) {
-    <p class="muted">Biere werden geladen …</p>
+    <p class="text-neutral-400">Biere werden geladen …</p>
   } @else if (error()) {
-    <p class="error-msg">{{ error() }}</p>
+    <p class="text-error">{{ error() }}</p>
   } @else if (entries().length === 0) {
-    <p class="muted">Keine Biere in dieser Liste.</p>
+    <p class="text-neutral-400">Keine Biere in dieser Liste.</p>
   } @else {
-    <div class="beer-grid">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       @for (entry of entries(); track entry.id) {
-        <article class="beer-item">
+        <article class="panel-dark flex flex-col gap-3 p-4">
           @if (entry.beer; as beer) {
-            <a class="beer-link" [routerLink]="['/beers', beer.id]">
-              <div class="beer-thumb">
-                <img
-                  [src]="beer.imageUrl | mediaUrl"
-                  [alt]="beer.name"
-                  (error)="$any($event.target).src = '/public/beer-placeholder.png'"
-                />
-              </div>
-              <div class="beer-info">
-                <span class="beer-name">{{ beer.name }}</span>
+            <a class="flex items-center gap-3 no-underline" [routerLink]="['/beers', beer.id]">
+              <img
+                class="h-14 w-14 shrink-0 rounded-lg object-cover"
+                [src]="beer.imageUrl | mediaUrl"
+                [alt]="beer.name"
+                (error)="$any($event.target).src = '/public/beer-placeholder.png'"
+              />
+              <div class="min-w-0">
+                <span class="block truncate font-bold text-white">{{ beer.name }}</span>
                 @if (beer.brewery) {
-                  <span class="beer-brewery">{{ beer.brewery }}</span>
+                  <span class="block truncate text-sm text-neutral-400">{{ beer.brewery }}</span>
                 }
               </div>
             </a>
           } @else {
-            <div class="beer-info">
-              <span class="beer-name">Unbekanntes Bier</span>
+            <div class="min-w-0">
+              <span class="block truncate font-bold text-white">Unbekanntes Bier</span>
             </div>
           }
-          <span class="status-badge status-{{ entry.status }}">
+
+          <span
+            class="status-{{
+              entry.status
+            }} w-fit rounded-full px-3 py-1 text-xs font-bold uppercase tracking-wide"
+          >
             {{ statusLabel(entry.status) }}
           </span>
+
           @if (entry.note) {
-            <p class="beer-note">{{ entry.note }}</p>
+            <p class="text-sm text-neutral-400">{{ entry.note }}</p>
           }
+
           <button
             type="button"
-            class="remove-button"
+            class="mt-auto w-fit self-start rounded-lg border border-neutral-600 px-3 py-1.5 text-sm text-neutral-400 transition hover:border-error hover:text-error disabled:cursor-default disabled:opacity-60"
             [disabled]="removingIds().includes(entry.id)"
             [attr.aria-label]="
               (entry.beer?.name ?? 'Bier') +

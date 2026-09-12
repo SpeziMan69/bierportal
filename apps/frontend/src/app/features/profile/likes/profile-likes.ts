@@ -9,7 +9,6 @@ import type { UserLike } from '../../../models/user';
   standalone: true,
   imports: [DatePipe, RouterLink],
   templateUrl: './profile-likes.html',
-  styleUrl: './profile-likes.scss',
 })
 export class ProfileLikes implements OnInit {
   private readonly userService = inject(UserService);

@@ -11,7 +11,6 @@ const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB, mirrors the backend uplo
   standalone: true,
   imports: [FormsModule, MediaUrlPipe],
   templateUrl: './profile-overview.html',
-  styleUrl: './profile-overview.scss',
 })
 export class ProfileOverview {
   private readonly userService = inject(UserService);

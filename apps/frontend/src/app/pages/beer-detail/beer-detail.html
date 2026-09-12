@@ -1,43 +1,49 @@
-<section class="beer-detail">
-  <a class="back-link" routerLink="/beers"
+<section class="bg-neutral-900 px-6 py-10 text-white md:px-16">
+  <a class="mb-8 inline-block text-blue-600 hover:underline" routerLink="/beers"
     ><span aria-hidden="true">←</span> Zurück zu allen Bieren</a
   >
 
   @if (loading()) {
-    <div class="not-found">
-      <h1>Bier wird geladen</h1>
-      <p>Die Produktinformationen werden abgerufen.</p>
+    <div class="state-box">
+      <h1 class="mb-6 mt-2 text-4xl font-bold sm:text-5xl">Bier wird geladen</h1>
+      <p class="text-neutral-400">Die Produktinformationen werden abgerufen.</p>
     </div>
   } @else if (beer(); as selectedBeer) {
-    <article class="beer-detail-card">
-      <div class="beer-detail-image-wrapper">
+    <article class="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
+      <div>
         <img
-          class="beer-detail-image"
+          class="h-80 w-full rounded-2xl object-cover md:h-full"
           [src]="selectedBeer.imageUrl | mediaUrl"
           [alt]="selectedBeer.name + ' von ' + selectedBeer.brewery"
           (error)="$any($event.target).src = '/public/beer-placeholder.png'"
         />
       </div>
 
-      <div class="beer-detail-content">
-        <p class="eyebrow">{{ selectedBeer.brewery }}</p>
-        <h1>{{ selectedBeer.name }}</h1>
-        <p class="description">{{ selectedBeer.description }}</p>
+      <div class="self-center">
+        <p class="font-bold uppercase tracking-wide text-blue-600">
+          {{ selectedBeer.brewery }}
+        </p>
+        <h1 class="mb-4 mt-2 text-4xl font-bold sm:text-5xl">
+          {{ selectedBeer.name }}
+        </h1>
+        <p class="max-w-md text-lg text-neutral-300">
+          {{ selectedBeer.description }}
+        </p>
 
-        <dl class="beer-facts">
-          <div>
-            <dt>Biersorte</dt>
-            <dd>{{ selectedBeer.type }}</dd>
+        <dl class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="stat-box">
+            <dt class="text-sm text-neutral-400">Biersorte</dt>
+            <dd class="mt-1 font-bold">{{ selectedBeer.type }}</dd>
           </div>
 
-          <div>
-            <dt>Herkunft</dt>
-            <dd>{{ selectedBeer.country }}</dd>
+          <div class="stat-box">
+            <dt class="text-sm text-neutral-400">Herkunft</dt>
+            <dd class="mt-1 font-bold">{{ selectedBeer.country }}</dd>
           </div>
 
-          <div>
-            <dt>Alkohol</dt>
-            <dd>
+          <div class="stat-box">
+            <dt class="text-sm text-neutral-400">Alkohol</dt>
+            <dd class="mt-1 font-bold">
               @if (selectedBeer.alcohol !== null) {
                 {{ selectedBeer.alcohol }} %
               } @else {
@@ -46,9 +52,9 @@
             </dd>
           </div>
 
-          <div>
-            <dt>Bewertung</dt>
-            <dd>
+          <div class="stat-box">
+            <dt class="text-sm text-neutral-400">Bewertung</dt>
+            <dd class="mt-1 font-bold">
               @if (selectedBeer.rating !== null) {
                 {{ selectedBeer.rating }}
               } @else {
@@ -60,10 +66,10 @@
       </div>
     </article>
   } @else {
-    <div class="not-found">
-      <h1>Bier nicht gefunden</h1>
-      <p>{{ error() }}</p>
-      <button type="button" (click)="loadBeer()">Erneut versuchen</button>
+    <div class="state-box">
+      <h1 class="mb-6 mt-2 text-4xl font-bold sm:text-5xl">Bier nicht gefunden</h1>
+      <p class="text-neutral-400">{{ error() }}</p>
+      <button type="button" class="btn-cta mt-4" (click)="loadBeer()">Erneut versuchen</button>
     </div>
   }
 </section>

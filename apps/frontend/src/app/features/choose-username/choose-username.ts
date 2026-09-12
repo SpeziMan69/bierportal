@@ -8,7 +8,6 @@ import { Auth } from '../../core/auth/auth';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './choose-username.html',
-  styleUrl: './choose-username.scss',
 })
 export class ChooseUsername {
   private readonly auth = inject(Auth);

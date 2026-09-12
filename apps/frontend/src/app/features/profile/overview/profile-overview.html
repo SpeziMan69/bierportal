@@ -1,22 +1,35 @@
-<form class="overview" (ngSubmit)="save()">
-  <h2>Profil bearbeiten</h2>
-  <p class="hint">Aktualisiere deinen Benutzernamen und dein Profilbild.</p>
+<form class="mx-auto flex max-w-md flex-col gap-5 text-white" (ngSubmit)="save()">
+  <div>
+    <h2 class="text-2xl font-bold">Profil bearbeiten</h2>
+    <p class="mt-1 text-sm text-neutral-400">
+      Aktualisiere deinen Benutzernamen und dein Profilbild.
+    </p>
+  </div>
 
-  <div class="preview">
-    <div class="preview-avatar">
+  <div class="flex justify-center">
+    <div
+      class="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-blue-600"
+    >
       @if (picture().trim() && !imageError()) {
-        <img [src]="picture().trim() | mediaUrl" alt="Vorschau" (error)="imageError.set(true)" />
+        <img
+          class="h-full w-full object-cover"
+          [src]="picture().trim() | mediaUrl"
+          alt="Vorschau"
+          (error)="imageError.set(true)"
+        />
       } @else {
-        <span>{{ (username || '?').charAt(0).toUpperCase() }}</span>
+        <span class="text-2xl font-bold text-neutral-900">{{
+          (username || '?').charAt(0).toUpperCase()
+        }}</span>
       }
     </div>
   </div>
 
-  <div class="form-group">
-    <label class="form-label" for="username">Benutzername</label>
+  <div class="flex flex-col gap-2">
+    <label class="text-sm font-bold text-neutral-300" for="username">Benutzername</label>
     <input
       id="username"
-      class="form-input"
+      class="input-dark px-3"
       name="username"
       type="text"
       [(ngModel)]="username"
@@ -24,9 +37,13 @@
     />
   </div>
 
-  <div class="form-group">
-    <span class="form-label">Profilbild ändern</span>
-    <label class="btn btn-secondary file-upload" [class.disabled]="uploading()">
+  <div class="flex flex-col gap-2">
+    <span class="text-sm font-bold text-neutral-300">Profilbild ändern</span>
+    <label
+      class="btn-secondary inline-flex w-fit cursor-pointer items-center justify-center"
+      [class.opacity-60]="uploading()"
+      [class.pointer-events-none]="uploading()"
+    >
       {{ uploading() ? 'Wird hochgeladen …' : 'Bild hochladen' }}
       <input
         name="avatar"
@@ -40,13 +57,17 @@
   </div>
 
   @if (error()) {
-    <p class="error-msg">{{ error() }}</p>
+    <p class="text-error" role="alert">{{ error() }}</p>
   }
   @if (success()) {
-    <p class="success-msg">Profil erfolgreich gespeichert.</p>
+    <p class="text-emerald-400" role="status">Profil erfolgreich gespeichert.</p>
   }
 
-  <button class="btn btn-primary" type="submit" [disabled]="saving()">
+  <button
+    class="btn-cta w-fit disabled:cursor-not-allowed disabled:opacity-60"
+    type="submit"
+    [disabled]="saving()"
+  >
     {{ saving() ? 'Wird gespeichert …' : 'Speichern' }}
   </button>
 </form>

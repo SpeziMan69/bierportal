@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@source './app/**/*.{html,ts}';
+
+@theme inline {
+  --color-error: var(--error);
+}

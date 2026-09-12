@@ -1,27 +1,45 @@
-<div class="auth-page">
-  <div class="auth-card">
-    <h1 class="auth-title">Choose a username</h1>
-    <p class="auth-subtitle">Pick a username for your profile. You can always change it later.</p>
+<section class="flex min-h-screen items-center justify-center bg-neutral-900 px-4 py-16 text-white">
+  <div class="panel-dark w-full max-w-md p-8 sm:p-10">
+    <h1 class="text-center text-3xl font-bold">Wähle einen Benutzernamen</h1>
+    <p class="mt-2 mb-6 text-center text-sm text-neutral-400">
+      Wähle einen Benutzernamen für dein Profil. Du kannst ihn später jederzeit ändern.
+    </p>
 
-    <div class="form-group">
-      <label class="form-label">Username</label>
-      <input
-        class="form-input"
-        [(ngModel)]="username"
-        placeholder="Username"
-        type="text"
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-neutral-300" for="username">Benutzername</label>
+        <input
+          id="username"
+          name="username"
+          class="input-dark px-3 disabled:opacity-50"
+          [(ngModel)]="username"
+          placeholder="Benutzername"
+          type="text"
+          [disabled]="loading()"
+        />
+      </div>
+
+      @if (error()) {
+        <p class="text-error" role="alert">{{ error() }}</p>
+      }
+
+      <button
+        type="button"
+        class="btn-cta w-full disabled:cursor-not-allowed disabled:opacity-50"
+        (click)="submit()"
+        [disabled]="!username.trim() || loading()"
+      >
+        {{ loading() ? 'Wird gespeichert …' : 'Weiter' }}
+      </button>
+
+      <button
+        type="button"
+        class="btn-secondary w-full disabled:cursor-not-allowed disabled:opacity-50"
+        (click)="skip()"
         [disabled]="loading()"
-      />
+      >
+        Später festlegen
+      </button>
     </div>
-
-    @if (error()) {
-      <p class="error-msg">{{ error() }}</p>
-    }
-
-    <button class="btn btn-primary" (click)="submit()" [disabled]="!username.trim() || loading()">
-      {{ loading() ? 'Saving...' : 'Continue' }}
-    </button>
-
-    <button class="btn btn-ghost" (click)="skip()" [disabled]="loading()">Skip for now</button>
   </div>
-</div>
+</section>

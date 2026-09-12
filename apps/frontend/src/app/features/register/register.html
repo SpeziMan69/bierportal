@@ -1,56 +1,88 @@
-<div class="auth-page">
-  <div class="auth-card">
-    <h1 class="auth-title">Sign up for free</h1>
+<section class="flex min-h-screen items-center justify-center bg-neutral-900 px-4 py-16 text-white">
+  <div class="panel-dark w-full max-w-md p-8 sm:p-10">
+    <h1 class="mb-6 text-center text-3xl font-bold">Registrieren</h1>
 
-    <div class="form-group">
-      <label class="form-label">Username</label>
-      <input class="form-input" [(ngModel)]="username" placeholder="Username" type="text" />
-    </div>
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-neutral-300" for="username">Benutzername</label>
+        <input
+          id="username"
+          name="username"
+          class="input-dark px-3"
+          [(ngModel)]="username"
+          placeholder="Benutzername"
+          type="text"
+        />
+      </div>
 
-    <div class="form-group">
-      <label class="form-label">Email address</label>
-      <input class="form-input" [(ngModel)]="email" placeholder="Email address" type="email" />
-    </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-neutral-300" for="email">E-Mail-Adresse</label>
+        <input
+          id="email"
+          name="email"
+          class="input-dark px-3"
+          [(ngModel)]="email"
+          placeholder="E-Mail-Adresse"
+          type="email"
+        />
+      </div>
 
-    <div class="form-group">
-      <label class="form-label">Password</label>
-      <input class="form-input" [(ngModel)]="password" placeholder="Password" type="password" />
-    </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-neutral-300" for="password">Passwort</label>
+        <input
+          id="password"
+          name="password"
+          class="input-dark px-3"
+          [(ngModel)]="password"
+          placeholder="Passwort"
+          type="password"
+        />
+      </div>
 
-    <div class="form-group">
-      <label class="form-label">Confirm password</label>
-      <input
-        class="form-input"
-        [(ngModel)]="passwordConfirm"
-        placeholder="Confirm password"
-        type="password"
-      />
-    </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-bold text-neutral-300" for="passwordConfirm"
+          >Passwort bestätigen</label
+        >
+        <input
+          id="passwordConfirm"
+          name="passwordConfirm"
+          class="input-dark px-3"
+          [(ngModel)]="passwordConfirm"
+          placeholder="Passwort bestätigen"
+          type="password"
+        />
+      </div>
 
-    @if (passwordMismatch()) {
-      <p class="error-msg">Passwords do not match.</p>
-    }
+      @if (passwordMismatch()) {
+        <p class="text-error" role="alert">Die Passwörter stimmen nicht überein.</p>
+      }
+      @if (error()) {
+        <p class="text-error" role="alert">{{ error() }}</p>
+      }
 
-    @if (error()) {
-      <p class="error-msg">{{ error() }}</p>
-    }
+      <button type="button" class="btn-cta w-full" (click)="submit()">Konto erstellen</button>
 
-    <button class="btn btn-primary" (click)="submit()">Create account</button>
+      <div class="my-1 flex items-center gap-3">
+        <span class="h-px flex-1 bg-neutral-700"></span>
+        <span class="text-sm text-neutral-400">oder</span>
+        <span class="h-px flex-1 bg-neutral-700"></span>
+      </div>
 
-    <div class="divider">
-      <span class="divider-line"></span>
-      <span class="divider-text">or</span>
-      <span class="divider-line"></span>
-    </div>
+      <button
+        type="button"
+        class="btn-secondary flex w-full items-center justify-center gap-3 py-3"
+        (click)="auth.loginOrRegisterWithGoogle()"
+      >
+        <img class="h-5 w-5" src="public/google.ico" alt="Google" />
+        Mit Google registrieren
+      </button>
 
-    <button class="btn btn-social" (click)="auth.loginOrRegisterWithGoogle()">
-      <img class="social-icon" src="public/google.ico" alt="Google" />
-      Sign up with Google
-    </button>
-
-    <div class="auth-footer">
-      <span class="footer-text">Already have an account?</span>
-      <a class="footer-link" routerLink="/login">Log in</a>
+      <div
+        class="mt-2 flex items-center justify-center gap-2 border-t border-neutral-800 pt-6 text-sm"
+      >
+        <span class="text-neutral-400">Bereits ein Konto?</span>
+        <a class="font-bold text-blue-600 hover:underline" routerLink="/login">Anmelden</a>
+      </div>
     </div>
   </div>
-</div>
+</section>
