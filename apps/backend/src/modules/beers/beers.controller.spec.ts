@@ -19,8 +19,6 @@ const fakeBeer = {
   name: 'Test Pils',
   description: 'Ein frisches Test-Pils.',
   abv: '4.8',
-  ibu: '30.0',
-  ebc: '8.0',
   imageUrl: '/uploads/beers/test.png',
   isActive: true,
   brewery: fakeBrewery,

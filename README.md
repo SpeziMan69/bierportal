@@ -165,5 +165,14 @@ Further docs live in [`docs/`](docs/README.md):
 - **Port already in use (3000 or 4200)** - stop whatever else is bound to that port, or change `PORT` / the frontend dev port.
 
 ## Features
-- [ ] Feature 1
-- [ ] Feature 2
+
+- [x] User registration & login (local email/username + password)
+- [x] Google OAuth2 login
+- [x] Beer catalog: browse, search, filter, paginated listing
+- [x] Beer detail pages with brewery info, ratings and reviews
+- [x] Brewery catalog: browse, search, filter, paginated listing
+- [x] Beer & brewery CRUD with image/logo upload (soft-delete for beers, blocked hard-delete for breweries still in use)
+- [x] Reviews: one review per user/beer, ratings, edit/delete your own, like/unlike
+- [x] Personal beer tracking (tried / wishlist / cellar)
+- [x] User profiles: own-profile editing, public profile view, a user's reviews/likes
+- [x] Account deletion

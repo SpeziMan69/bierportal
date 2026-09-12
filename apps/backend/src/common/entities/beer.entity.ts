@@ -36,12 +36,6 @@ export class Beer {
   @Column({ type: 'decimal', precision: 4, scale: 1, nullable: true })
   abv!: number;
 
-  @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true })
-  ibu!: number;
-
-  @Column({ type: 'decimal', precision: 6, scale: 1, nullable: true })
-  ebc!: number;
-
   @Column({ nullable: true })
   style!: string;
 

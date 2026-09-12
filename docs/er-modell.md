@@ -50,8 +50,6 @@ erDiagram
         varchar imageUrl "nullable"
         text description "nullable"
         decimal abv "nullable"
-        decimal ibu "nullable"
-        decimal ebc "nullable"
         varchar style "nullable"
         bool isActive
         decimal avgRating "denormalisiert"
