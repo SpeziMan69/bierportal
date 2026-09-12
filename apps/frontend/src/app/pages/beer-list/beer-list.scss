@@ -1,9 +1,0 @@
-@reference '../../../tailwind.scss';
-
-.input-dark {
-  @apply h-11 w-full rounded-lg border border-neutral-600 bg-neutral-900 text-white outline-none focus:border-blue-600;
-}
-
-.state-panel {
-  @apply mx-auto max-w-lg rounded-2xl border border-dashed border-neutral-700 bg-neutral-800 px-6 py-12 text-center;
-}

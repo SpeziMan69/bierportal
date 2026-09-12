@@ -1,25 +1,31 @@
-<div class="reviews">
+<div class="flex flex-col gap-4 text-white">
   @if (loading()) {
-    <p class="muted">Bewertungen werden geladen …</p>
+    <p class="text-neutral-400">Bewertungen werden geladen …</p>
   } @else if (error()) {
-    <p class="error-msg">{{ error() }}</p>
+    <p class="text-error">{{ error() }}</p>
   } @else if (reviews().length === 0) {
-    <p class="muted">Du hast noch keine Biere bewertet.</p>
+    <p class="text-neutral-400">Du hast noch keine Biere bewertet.</p>
   } @else {
     @for (review of reviews(); track review.id) {
-      <article class="review-card">
-        <div class="review-head">
+      <article class="panel-dark p-5">
+        <div class="flex items-center justify-between gap-3">
           @if (review.beer; as beer) {
-            <a class="beer-name" [routerLink]="['/beers', beer.id]">{{ beer.name }}</a>
+            <a
+              class="font-bold text-white no-underline hover:text-blue-600"
+              [routerLink]="['/beers', beer.id]"
+              >{{ beer.name }}</a
+            >
           } @else {
-            <span class="beer-name">Unbekanntes Bier</span>
+            <span class="font-bold text-white">Unbekanntes Bier</span>
           }
-          <span class="rating">⭐ {{ review.rating }}</span>
+          <span class="whitespace-nowrap font-bold text-blue-600">⭐ {{ review.rating }}</span>
         </div>
+
         @if (review.text) {
-          <p class="review-text">{{ review.text }}</p>
+          <p class="mt-3 text-neutral-300">{{ review.text }}</p>
         }
-        <p class="review-date">{{ review.createdAt | date: 'medium' }}</p>
+
+        <p class="mt-3 text-sm text-neutral-400">{{ review.createdAt | date: 'medium' }}</p>
       </article>
     }
   }

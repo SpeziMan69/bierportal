@@ -9,7 +9,6 @@ import type { UserReview } from '../../../models/user';
   standalone: true,
   imports: [DatePipe, RouterLink],
   templateUrl: './profile-reviews.html',
-  styleUrl: './profile-reviews.scss',
 })
 export class ProfileReviews implements OnInit {
   private readonly userService = inject(UserService);

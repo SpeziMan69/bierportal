@@ -7,7 +7,6 @@ import { Auth } from '../../../core/auth/auth';
   standalone: true,
   imports: [],
   templateUrl: './profile-danger.html',
-  styleUrl: './profile-danger.scss',
 })
 export class ProfileDanger {
   private readonly auth = inject(Auth);

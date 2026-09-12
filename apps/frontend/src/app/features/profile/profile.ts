@@ -25,7 +25,6 @@ type ProfileTab = 'overview' | 'reviews' | 'likes' | 'beers' | 'danger';
     ProfileDanger,
   ],
   templateUrl: './profile.html',
-  styleUrl: './profile.scss',
 })
 export class Profile {
   protected readonly auth = inject(Auth);

@@ -1,86 +1,115 @@
-<section class="profile-page">
-  @if (loading()) {
-    <div class="state-card">
-      <h1>Profil wird geladen …</h1>
-      <p>Deine Daten werden abgerufen.</p>
-    </div>
-  } @else if (profile(); as user) {
-    <header class="profile-header">
-      <div class="avatar">
-        @if (user.picture) {
-          <img [src]="user.picture | mediaUrl" [alt]="user.username" />
-        } @else {
-          <span class="avatar-initial">{{ initial(user.username) }}</span>
-        }
+<section class="bg-neutral-900 px-6 py-12 text-white">
+  <div class="mx-auto max-w-4xl">
+    @if (loading()) {
+      <div class="state-panel">
+        <h1 class="text-2xl font-bold">Profil wird geladen …</h1>
+        <p class="mt-3 text-neutral-400">Deine Daten werden abgerufen.</p>
       </div>
-
-      <div class="profile-heading">
-        <h1>{{ user.username }}</h1>
-        <p class="member-since">Mitglied seit {{ user.createdAt | date: 'longDate' }}</p>
-        <div class="stats">
-          <span
-            ><strong>{{ user.reviewCount }}</strong> Bewertungen</span
-          >
-          <span
-            ><strong>{{ user.likeCount }}</strong> Likes</span
-          >
+    } @else if (profile(); as user) {
+      <header class="flex flex-col items-center gap-6 border-b border-neutral-800 pb-8 sm:flex-row">
+        <div
+          class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-blue-600"
+        >
+          @if (user.picture) {
+            <img
+              class="h-full w-full object-cover"
+              [src]="user.picture | mediaUrl"
+              [alt]="user.username"
+            />
+          } @else {
+            <span class="text-4xl font-bold text-neutral-900">{{ initial(user.username) }}</span>
+          }
         </div>
+
+        <div class="text-center sm:text-left">
+          <h1 class="text-3xl font-bold">{{ user.username }}</h1>
+          <p class="mt-1 text-sm text-neutral-400">
+            Mitglied seit {{ user.createdAt | date: 'longDate' }}
+          </p>
+          <div class="mt-3 flex flex-wrap justify-center gap-5 sm:justify-start">
+            <span class="text-neutral-400"
+              ><strong class="text-white">{{ user.reviewCount }}</strong> Bewertungen</span
+            >
+            <span class="text-neutral-400"
+              ><strong class="text-white">{{ user.likeCount }}</strong> Likes</span
+            >
+          </div>
+        </div>
+      </header>
+
+      <nav class="mt-6 flex flex-wrap gap-1 border-b border-neutral-800">
+        <button
+          type="button"
+          class="border-b-2 border-transparent px-4 py-3 text-sm font-semibold text-neutral-400 transition hover:text-white"
+          [class.border-blue-600]="activeTab() === 'overview'"
+          [class.text-white]="activeTab() === 'overview'"
+          (click)="setTab('overview')"
+        >
+          Übersicht
+        </button>
+        <button
+          type="button"
+          class="border-b-2 border-transparent px-4 py-3 text-sm font-semibold text-neutral-400 transition hover:text-white"
+          [class.border-blue-600]="activeTab() === 'reviews'"
+          [class.text-white]="activeTab() === 'reviews'"
+          (click)="setTab('reviews')"
+        >
+          Bewertungen
+        </button>
+        <button
+          type="button"
+          class="border-b-2 border-transparent px-4 py-3 text-sm font-semibold text-neutral-400 transition hover:text-white"
+          [class.border-blue-600]="activeTab() === 'likes'"
+          [class.text-white]="activeTab() === 'likes'"
+          (click)="setTab('likes')"
+        >
+          Likes
+        </button>
+        <button
+          type="button"
+          class="border-b-2 border-transparent px-4 py-3 text-sm font-semibold text-neutral-400 transition hover:text-white"
+          [class.border-blue-600]="activeTab() === 'beers'"
+          [class.text-white]="activeTab() === 'beers'"
+          (click)="setTab('beers')"
+        >
+          Meine Biere
+        </button>
+        <button
+          type="button"
+          class="ml-auto border-b-2 border-transparent px-4 py-3 text-sm font-semibold text-neutral-400 transition hover:text-error"
+          [class.border-error]="activeTab() === 'danger'"
+          [class.text-error]="activeTab() === 'danger'"
+          (click)="setTab('danger')"
+        >
+          Konto löschen
+        </button>
+      </nav>
+
+      <div class="mt-8">
+        @switch (activeTab()) {
+          @case ('overview') {
+            <app-profile-overview [profile]="user" (updated)="onProfileUpdated($event)" />
+          }
+          @case ('reviews') {
+            <app-profile-reviews [userId]="user.id" />
+          }
+          @case ('likes') {
+            <app-profile-likes [userId]="user.id" />
+          }
+          @case ('beers') {
+            <app-profile-beers />
+          }
+          @case ('danger') {
+            <app-profile-danger />
+          }
+        }
       </div>
-    </header>
-
-    <nav class="tabs">
-      <button
-        type="button"
-        [class.active]="activeTab() === 'overview'"
-        (click)="setTab('overview')"
-      >
-        Übersicht
-      </button>
-      <button type="button" [class.active]="activeTab() === 'reviews'" (click)="setTab('reviews')">
-        Bewertungen
-      </button>
-      <button type="button" [class.active]="activeTab() === 'likes'" (click)="setTab('likes')">
-        Likes
-      </button>
-      <button type="button" [class.active]="activeTab() === 'beers'" (click)="setTab('beers')">
-        Meine Biere
-      </button>
-      <button
-        type="button"
-        class="danger-tab"
-        [class.active]="activeTab() === 'danger'"
-        (click)="setTab('danger')"
-      >
-        Konto löschen
-      </button>
-    </nav>
-
-    <div class="tab-content">
-      @switch (activeTab()) {
-        @case ('overview') {
-          <app-profile-overview [profile]="user" (updated)="onProfileUpdated($event)" />
-        }
-        @case ('reviews') {
-          <app-profile-reviews [userId]="user.id" />
-        }
-        @case ('likes') {
-          <app-profile-likes [userId]="user.id" />
-        }
-        @case ('beers') {
-          <app-profile-beers />
-        }
-        @case ('danger') {
-          <app-profile-danger />
-        }
-      }
-    </div>
-  } @else {
-    <div class="state-card">
-      <h1>Profil nicht verfügbar</h1>
-      <p>{{ error() }}</p>
-      <button type="button" class="btn btn-primary" (click)="loadProfile()">
-        Erneut versuchen
-      </button>
-    </div>
-  }
+    } @else {
+      <div class="state-panel">
+        <h1 class="text-2xl font-bold">Profil nicht verfügbar</h1>
+        <p class="mt-3 mb-6 text-neutral-400">{{ error() }}</p>
+        <button type="button" class="btn-cta" (click)="loadProfile()">Erneut versuchen</button>
+      </div>
+    }
+  </div>
 </section>
