@@ -1,0 +1,43 @@
+# Nx
+.nx
+
+# Compiled output
+dist
+tmp
+out-tsc
+build
+
+# Node
+node_modules
+npm-debug.log*
+
+# Uploaded user content
+apps/backend/uploads
+
+# Logs
+logs
+*.log
+
+# Tests
+coverage
+.nyc_output
+
+# Git
+.git
+.gitignore
+
+# IDEs and editors
+.idea
+.vscode
+
+# Secrets & Environment
+.env
+.env.*
+!.env.example
+
+# Datenbank
+pgdata
+
+# Temp
+.temp
+.tmp
