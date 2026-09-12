@@ -63,8 +63,35 @@
             </dd>
           </div>
         </dl>
+
+        <div class="mt-6 flex flex-wrap gap-2">
+          @for (button of collectionButtons; track button.status) {
+            <button
+              type="button"
+              class="btn-secondary disabled:cursor-default"
+              [disabled]="
+                savingStatuses().includes(button.status) || savedStatuses().includes(button.status)
+              "
+              (click)="addToCollection(button.status)"
+            >
+              @if (savingStatuses().includes(button.status)) {
+                Wird gespeichert …
+              } @else if (savedStatuses().includes(button.status)) {
+                {{ button.savedLabel }}
+              } @else {
+                {{ button.label }}
+              }
+            </button>
+          }
+        </div>
+
+        @if (entryError()) {
+          <p class="text-error" role="alert">{{ entryError() }}</p>
+        }
       </div>
     </article>
+
+    <app-beer-reviews class="mx-auto mt-8 block max-w-5xl" [beerId]="selectedBeer.id" />
   } @else {
     <div class="state-box">
       <h1 class="mb-6 mt-2 text-4xl font-bold sm:text-5xl">Bier nicht gefunden</h1>
