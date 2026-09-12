@@ -11,7 +11,6 @@ type BeerSort = 'name-asc' | 'rating-desc' | 'alcohol-asc' | 'alcohol-desc';
   selector: 'app-beer-list',
   imports: [BeerCard, FormsModule],
   templateUrl: './beer-list.html',
-  styleUrl: './beer-list.css',
 })
 export class BeerList implements OnInit, OnDestroy {
   private readonly beerService = inject(BeerService);
