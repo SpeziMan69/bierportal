@@ -50,6 +50,8 @@
     "class-validator": "^0.15.1",
     "cookie-parser": "^1.4.7",
     "csv-parse": "^5.6.0",
+    "dotenv": "^17.4.1",
+    "express": "^5.2.1",
     "helmet": "^8.1.0",
     "joi": "^18.2.1",
     "multer": "^2.3.0",
@@ -66,10 +68,10 @@
     "zone.js": "^0.16.2"
   },
   "overrides": {
-    "js-yaml": "^4.1.0",
     "nx": {
       "follow-redirects": "^1.16.0"
-    }
+    },
+    "multer": "^2.3.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.2.9",
@@ -82,10 +84,12 @@
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.2.3",
     "@nx/angular": "22.7.1",
+    "@nx/devkit": "22.7.1",
     "@nx/eslint": "22.7.1",
     "@nx/jest": "22.7.1",
     "@nx/nest": "22.7.1",
     "@nx/node": "22.7.1",
+    "@nx/webpack": "22.7.1",
     "@nx/workspace": "22.7.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/bcrypt": "^6.0.0",
