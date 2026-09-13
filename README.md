@@ -31,6 +31,18 @@ A full-stack beer rating/portal app built with Angular and NestJS in an NX monor
 - **Docker** and **Docker Compose** (for the local PostgreSQL database)
 - A Google OAuth Client (only needed if you want to test Google login locally — see [Environment Variables](#environment-variables))
 
+
+## KI-Nutzung:
+ 
+Ai wurde in diesem Projekt in Form von Tools wie Codex, Claude Code und GithubCopilot genutzt für:
+    1. Assistent für Verständnisfragen, Hilfestellungen und Debugging
+    2. Docs und Kommentare generieren
+    3. Scss-Styling und Anpassung ähnlicher Komponenten, Später einzelne Tailwind Komponenten selbst geschrieben rest/ großteil des stylings mit KI
+    4. Quality of life improvements, wie z.B leere Components generieren zu lassen oder Endpoints zu testen durch Curling etc.
+    5. Features die nichts mit den in der Vorlesung unterrichteten Inhalten zu tun haben. z.B seed.ts in the backend
+Jeglicher Ai-generierter Code wurde kritisch reviewed und dementsprechend angepasst, Ai ersetzt in diesem Projekt nicht die Denk- sodern lediglich die Schreibarbeit.
+
+
 ## Getting Started (Fresh Clone / New Repo)
 
 1. **Clone the repository:**
@@ -131,8 +143,10 @@ Copied from `.env.example`, these are the variables the app expects:
 GitHub Actions (`.github/workflows/`) run on every push to `main` and every pull request:
 - **ci.yml** - lint, typecheck, test and build the projects affected by the change, against a real Postgres service container
 - **codeql.yml** / **security.yml** - static security analysis
-- **deployment.yml** - deployment pipeline
+- **deployment.yml** - builds and pushes the backend and frontend Docker images to GitHub Packages (GHCR) on every `v*` tag push
 - **Dependabot** keeps dependencies up to date (`.github/dependabot.yml`)
+
+CI/CD is active on this repository, and the built images are published as GitHub Packages under this repo.
 
 ## Documentation
 
