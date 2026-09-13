@@ -131,8 +131,10 @@ Copied from `.env.example`, these are the variables the app expects:
 GitHub Actions (`.github/workflows/`) run on every push to `main` and every pull request:
 - **ci.yml** - lint, typecheck, test and build the projects affected by the change, against a real Postgres service container
 - **codeql.yml** / **security.yml** - static security analysis
-- **deployment.yml** - deployment pipeline
+- **deployment.yml** - builds and pushes the backend and frontend Docker images to GitHub Packages (GHCR) on every `v*` tag push
 - **Dependabot** keeps dependencies up to date (`.github/dependabot.yml`)
+
+CI/CD is active on this repository, and the built images are published as GitHub Packages under this repo.
 
 ## Documentation
 
