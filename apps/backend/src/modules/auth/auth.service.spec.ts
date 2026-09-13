@@ -20,7 +20,7 @@ describe('AuthService', () => {
   let usersService: {
     findByEmail: jest.Mock;
     findByUsername: jest.Mock;
-    create: jest.Mock;
+    create: jest.Mock<Promise<Partial<User>>, [Partial<User>]>;
     update: jest.Mock;
   };
   let jwtService: { signAsync: jest.Mock };
@@ -29,7 +29,7 @@ describe('AuthService', () => {
     usersService = {
       findByEmail: jest.fn(),
       findByUsername: jest.fn(),
-      create: jest.fn(),
+      create: jest.fn<Promise<Partial<User>>, [Partial<User>]>(),
       update: jest.fn(),
     };
     jwtService = { signAsync: jest.fn().mockResolvedValue('signed.jwt.token') };
@@ -61,7 +61,8 @@ describe('AuthService', () => {
 
       expect(result).toEqual({ id: 'new-id', email: 'neu@example.com' });
 
-      const storedHash = usersService.create.mock.calls[0][0].passwordHash as string;
+      const createdUser = usersService.create.mock.calls[0][0];
+      const storedHash = createdUser.passwordHash as string;
       expect(storedHash).not.toBe('Sup3r$ecret1');
       await expect(bcrypt.compare('Sup3r$ecret1', storedHash)).resolves.toBe(true);
     });
@@ -135,9 +136,9 @@ describe('AuthService', () => {
     it('throws UnauthorizedException when the user does not exist', async () => {
       usersService.findByUsername.mockResolvedValue(null);
 
-      await expect(
-        service.login({ identifier: 'ghost', password: 'whatever123' }),
-      ).rejects.toThrow(UnauthorizedException);
+      await expect(service.login({ identifier: 'ghost', password: 'whatever123' })).rejects.toThrow(
+        UnauthorizedException,
+      );
     });
 
     it('throws UnauthorizedException for a Google-only account (no password set)', async () => {
