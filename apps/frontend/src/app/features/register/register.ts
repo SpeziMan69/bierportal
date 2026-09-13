@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { Auth } from '../../core/auth/auth';
 
+const PASSWORD_REQUIREMENTS_HINT =
+  'Das Passwort muss mindestens 8 Zeichen lang sein und Groß- sowie Kleinbuchstaben, eine Zahl und ein Sonderzeichen enthalten.';
+
 @Component({
   selector: 'app-register',
   standalone: true,
@@ -31,7 +34,7 @@ export class Register {
 
     this.auth.register(this.username, this.email, this.password).subscribe({
       next: () => void this.router.navigate(['/login']),
-      error: () => this.error.set('Registration failed. Please try again.'),
+      error: () => this.error.set(`Registrierung fehlgeschlagen. ${PASSWORD_REQUIREMENTS_HINT}`),
     });
   }
 }
